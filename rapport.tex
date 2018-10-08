@@ -1,0 +1,40 @@
+\documentclass[
+    10pt,
+    a4paper,
+    oneside,
+    headinclude,footinclude,
+    BCOR5mm,
+]{scrartcl}
+
+\input{structure.tex}
+
+\hyphenation{Fortran hy-phe-ation}
+
+\title{\normalfont{\spacedallcaps{Ready-Player-One}}}
+\subtitle{Rapport du groupe Harpon}
+
+\author{\spacedallcaps{Martin Lehoux, Pierre Biret, Sacha Seksik \& Loïc Audoin}}
+\date{\today}
+
+\begin{document}
+    
+\renewcommand{\sectionmark}[1]{\markright{\spacedlowsmallcaps{#1}}}
+\lehead{\mbox{\llap{\small\thepage\kern1em\color{halfgray} \vline}\color{halfgray}\hspace{0.5em}\rightmark\hfil}}
+\pagestyle{scrheadings}
+
+\maketitle
+\setcounter{tocdepth}{2}
+\tableofcontents
+% \listoffigures
+% \listoftables
+
+\section*{Abstract}
+
+\newpage
+\section{Réalisation du perceptron}
+
+\renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
+\bibliographystyle{unsrt}
+\bibliography{sample.bib} % The file containing the bibliography
+
+\end{document}
