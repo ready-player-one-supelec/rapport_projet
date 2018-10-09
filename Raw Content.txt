@@ -1,0 +1,11 @@
+Le projet "Ready player one", constitué de deux équipes (Harpon et Eponge) a pour but l'apprentissage par un réseau de neurones d'une stratégie gagnante au jeu "Pong" sur Atari.
+
+L'interêt du projet étant la compréhension des mécanismes des réseaux de neurones par l'ensemble des étudiants, ce projet sera donc constitué de plusieurs parties qui mèneront à terme à la réalisation du projet.
+
+La première étape de l'apprentissage des étudiants est le fonctionnement d'un neurone. Une feuille de calcul a donc été mise en place pour calculer à la main une itération de l'apprentissage d'un réseau de neurones de la fonction XOR à deux entrées avec rétropropagation. 
+
+La mise en place de cette feuille de calcul a mis en évidence la complexité des calculs effectués par les réseaux de neurones, ainsi que l'impossibilité d'effectuer tous les calculs à la main. Toutefois ce premier exemple de réseaux a permis à l'ensemble de l'équipe de comprendre comment se comportait un réseau de neurones à plusieurs couches, et leur a permis de se lancer dans le vif du sujet. (figure : Screen d'un excel indigeste)
+
+L'étape suivante fut donc la programmation en Python d'un réseau de neurones. Les modules matplotlib et numpy ont été utilisés pour les calculs matriciels, améliorant la vitesse de calcul. Chaque équipe a tenté lors de cette étape de coder sa version d'un réseau d'apprentissage du XOR, et malgré la simplicité apparente de cette tâche, les résultats ont divergé.
+
+Le premier constat fut le suivant : L'assurance de la convergence de l'erreur vers 0 ne se fait que lorsque la couche intermédiaire du réseau a au moins 4 neurones. (Figures : réseau de neurones 2-2-1 , divergence, réseau de neurones 2-4-1, convergence) Afin de s'assurer que les calculs et les résultats des deux équipes étaient bien les mêmes, la tâche leur fut confiée de reproduire à l'identique deux réseaux, de les implémenter dans leurs versions respectives codées sous Python, et de comparer les résultats, en prenant en compte l'intervalle de confiance de la valeur de l'erreur.
