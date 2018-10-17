@@ -33,6 +33,19 @@
 \newpage
 \section{Réalisation du perceptron}
 
+\paragraph{Semaine jusqu'au 17 octobre}
+
+
+La semaine a été consacrée à l'amélioration des premier résultats obtenus sur XOR, mais surtout sur MNIST.
+
+% TODO: Ajouter la référence de ce conseil
+L'utilisation de la tangente hyperbolique $f(x) = 1.7159 \times tanh(\frac{2x}{3})$ a permis d'améliorer les
+résultats, principalement en accélérant les calculs de propagation par rapport à $f(x) = \frac{1}{1 + e^{-x}}$.
+
+Les fonctions permettant de sauvegarder et de charger un perceptron après apprentissage dans un fichier ont été rajoutées.
+Mais la structure de donnée de l'autre groupe n'est pas forcément identique, il faut donc se mettre d'accord sur un format de fichier commun.
+Il sera ensuite possible de vérifier le comportement de propagation des deux perceptrons, qui devrait être identique.
+
 \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \bibliographystyle{unsrt}
 \bibliography{sample.bib} % The file containing the bibliography
