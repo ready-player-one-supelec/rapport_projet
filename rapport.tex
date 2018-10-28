@@ -3,7 +3,7 @@
     a4paper,
     oneside,
     headinclude,footinclude,
-    BCOR5mm,
+    BCOR=5mm,
 ]{scrartcl}
 
 \input{structure.tex}
@@ -33,8 +33,7 @@
 \newpage
 \section{Réalisation du perceptron}
 
-\paragraph{Semaine jusqu'au 17 octobre}
-
+\paragraph{Semaine du 10 octobre}
 
 La semaine a été consacrée à l'amélioration des premier résultats obtenus sur XOR, mais surtout sur MNIST.
 
@@ -46,8 +45,16 @@ Les fonctions permettant de sauvegarder et de charger un perceptron après appre
 Mais la structure de donnée de l'autre groupe n'est pas forcément identique, il faut donc se mettre d'accord sur un format de fichier commun.
 Il sera ensuite possible de vérifier le comportement de propagation des deux perceptrons, qui devrait être identique.
 
+\paragraph{Semaine du 30 octobre}
+
+L'équipe a continué à se renseigner sur les réseaux de neurones à convolution. L'accès aux machines virtuelles a permis de lancer des scripts plus longs
+sans handicaper les membres de l'équipe.
+
+Sur un autre sujet, nous nous sommes penchés sur les différences (de l'ordre d'un facteur 100) entre notre taux d'apprentissage sur MNIST et celui de
+l'équipe Éponge.
+
 \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \bibliographystyle{unsrt}
-\bibliography{sample.bib} % The file containing the bibliography
+\bibliography{sample} % The file containing the bibliography
 
 \end{document}
