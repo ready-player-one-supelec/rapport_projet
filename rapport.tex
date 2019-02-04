@@ -150,6 +150,13 @@ Les résultats du Deep Q Learning sur Pong sont décevants. Le modèle semble ra
 
 L'équipe se met à adapter le code existant concernant le Deep Q Learning sur pong pour une utilisation de tensorflow. En effet, c'est le plus performant pour passer d'un perceptron multicouche à un réseau de convolution. De plus, avec un réseau développé sous tensorflow, il est très facile d'utiliser des cartes graphiques pour décupler les performances.
 
+Lors de la programmation d'un système de Q-Learning, beaucoup de questions qui n'étaient pas à l'ordre du jour pour le développement d'un perceptron entrent en compte. En effet, on se trouve désormais en présence d'un système à apprentissage non supervisé, ce qui diffère grandement à l'entrainement sur les données de MNIST.
+
+L'objectif du Q-Learning est de calculer une fonction permettant au programme de choisir une action dans un ensemble d'actions $a \in A$ en présence d'un environnement ou état $s \in S$. Pour cela, on définit une fonction $Q: S \times A \rightarrow \mathbb{R}$ qui permet d'estimer la qualité du choix de $a$ dans l'état $s$. Il existe une fonction $R: S \rightarrow \mathbb{R}$ donnant la récompense associée à un état $s$. Cette fonction, qui présente très peu de valeurs non nulles, elle la seule manière d'avoir un retour sur la qualité des choix effectués. Elle annonce notamment les cas d'échec ou de succès pour le programme. Si l'espace d'état est de dimension assez faible, on peut estimer la fonction $Q$ par itérations, en connsaissant toutes les valeurs possibles. Cette fonction est donc définie par ce que l'on appelle une Q-table.
+$$Q(s,a) = (1-\alpha) Q(s,a) + \alpha (r + \gamma max_{a'} Q(s',a') )$$
+
+Malheureusement pour notre utilisation, l'état consiste en une image à $160 \times 160$ dimensions. Il est impossible d'énumérer tous les états, et donc de définir la fonction $Q$ par un tableau. On va donc faire appel à un système de réseau de neurones afin d'estimer cette fonction.
+
 \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \bibliographystyle{unsrt}
 \bibliography{sample} % The file containing the bibliography
