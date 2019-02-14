@@ -43,14 +43,38 @@ L'interêt du projet étant la compréhension des mécanismes des réseaux de ne
 \newpage
 \section{Réalisation du perceptron}
 
-La première étape de l'apprentissage de notre groupe est le fonctionnement d'un neurone. Une feuille de calcul a donc été mise en place pour calculer à la main une itération de l'apprentissage d'un réseau de neurones de la fonction XOR à deux entrées avec rétropropagation, après visualisation par tous les étudiants du groupe d'une vidéo très bien réalisée sur le fonctionnement des réseaux neuronaux.
+
+
+\subsection{premières approches}
+
+la première étape de notre projet conserne la création d'un perceptron. pour cela, nous avons d'abord eu une approche théorique, afin de comprendre ce qu'était un réseau de neurones au niveau mathématique et en quoi il pouvait présenter une solution pour résoudre numériquement un problème de classification dans un espace à n dimensions. Pour celà, nous nous sommes évidemment appuyés sur les travaux fondateur de Yann LeCun, et ceux-ci nous serviront régulièrement par la suite. 
+
+L'important a été de comprendre en quoi la minimisation d'une fonction d'erreur était faisable en temps fini. Pour celà on s'interesse à la fonction associant un vecteur d'entrée et les paramètres (Poids, Biais) liés à chaque neurone à un vecteur de sortie du réseaux de neurones. Cette opération complexe est réalisées par applications successives des fonctions d'activations liées à chaque couche de neurones aux résultats (pondérés par des poids et biais) de la couche précédentes. 
+Le calcul de cette fonction est noté dans ce futur rapport comme frontpropagation ou propagation directe.
+
+ La fonction d'erreur mentionnée plus haut représentant la distance entre les sorties de la frontpropagations pour un vecteur d'entrées et les sorties voulues pour cette entrée, le principe du réseau de neurone va être de minimiser cette erreur en utilisant sa dérivée par rapports au différents paramètres du réseau. On remarque rapidement que le calcul d'une dérivée par rapport à un poids ou biais associé à un neurone d'une couche donnée va faire intervenir toutes les dérivées par rapports aux couches suivantes. le calcul de la déroulée va donc se faire dans le sens indirect, d'où l'usage du terme backpropagation.
+
+De plus, il est utile de comprendre que les fonction d'activation choisies auront la propriété utile de permettre en temps réduit le calcul de leur dérivée en fonction de leur résultat : on a pour tout $x$, $f'(x)=G(f(x))$ , ce qui va permettre, en retenant les résultats de chaque neurone pour la propagation directe, d'effectuer rapidement la propagation indirecte. 
+
+Enfin, le processus de minimisation se fait par des méthodes basés sur la méthode du gradient vectoriel:
+	 $Sys(n+1) = Sys(n) - Erreur[Syst(n)] * J (Erreur[Sys(n)]) ^{-1} $   
+et  va donc dépendre, en plus du choix de la fonction de coût et de la fonction d'activation des neurones, du choix de la méthode de minimisation et de ses paramètres associés (learning rate).
+
+
+Avant de commencer la programmation d'un perceptron, il a fallu commencer par comprendre le fonctionnement opération par opération d'un neurone. Une feuille de calcul a donc été mise en place pour calculer à la main une itération de l'apprentissage d'un réseau de neurones de la fonction XOR à deux entrées avec rétropropagation, après visualisation par tous les étudiants du groupe d'une vidéo très bien réalisée sur le fonctionnement des réseaux neuronaux.
 
 La mise en place de cette feuille de calcul a mis en évidence la complexité des calculs effectués par les réseaux de neurones, ainsi que l'impossibilité d'effectuer tous les calculs à la main. Toutefois ce premier exemple de réseaux a permis à l'ensemble de l'équipe de comprendre comment se comportait un réseau de neurones à plusieurs couches, et leur a permis de se lancer dans le vif du sujet. 
 % TODO: (figure : Screen d'un excel indigeste)
 
-L'étape suivante fut donc la programmation en Python d'un réseau de neurones. Les modules matplotlib et numpy ont été utilisés pour les calculs matriciels, améliorant la vitesse de calcul. Chaque équipe a tenté lors de cette étape de coder sa version d'un réseau d'apprentissage du XOR, et malgré la simplicité apparente de cette tâche, les résultats ont divergé.
+L'étape suivante fut donc la programmation en Python d'un réseau de neurones, celle-ci reposant sur la dualité entre parcours du réseau direct pour les calculs et inverse pour l'apprentissage (frontpropagation et backpropagation). Le module numpy ont été utilisés pour les calculs matriciels, améliorant la vitesse de calcul, comme on le voit sur la première courbe. Chaque équipe a tenté lors de cette étape de coder sa version d'un réseau d'apprentissage du XOR, et malgré la simplicité apparente de cette tâche, les résultats ont divergé.
+% TODO (figure : vitesse de calcul matriciel numpy par rapport à matrice)
 
-Le premier constat fut le suivant : L'assurance de la convergence de l'erreur vers 0 ne se fait que lorsque la couche intermédiaire du réseau a au moins 4 neurones. (Figures : réseau de neurones 2-2-1 , divergence, réseau de neurones 2-4-1, convergence) Afin de s'assurer que les calculs et les résultats des deux équipes étaient bien les mêmes, la tâche leur fut confiée de reproduire à l'identique deux réseaux, de les implémenter dans leurs versions respectives codées sous Python, et de comparer les résultats, en prenant en compte l'intervalle de confiance de la valeur de l'erreur.
+Le premier constat fut le suivant : L'assurance de la convergence de l'erreur vers $0$ ne se fait que lorsque la couche intermédiaire du réseau a au moins 4 neurones. (Figures : réseau de neurones 2-2-1 , divergence, réseau de neurones 2-4-1, convergence) Afin de s'assurer que les calculs et les résultats des deux équipes étaient bien les mêmes, la tâche leur fut confiée de reproduire à l'identique deux réseaux, de les implémenter dans leurs versions respectives codées sous Python, et de comparer les résultats, en prenant en compte l'intervalle de confiance de la valeur de l'erreur.
+
+Ces premiers résultats nous permettent de vérifier pour ce problème le théorème selon lequel tout problème de classification peut être traité efficacement par un perceptron n'ayant qu'une couche intermédiaire si cette couche est assez grande. la nécessité d'avoir une couche intermédiaire vient pour le cas du XOR, de la non linéarité du problème.
+
+
+\subsection{application au problèmme de classification de chiffress manuscrits}
 
 La suite était alors la réalisation d'un réseau de neurones pouvant travailler sur la base de de données MNIST des chiffres manuscrits, et sachant à terme reconnaître les chiffres. Le premier souci en terme de travail d'équipe a été rencontré à ce moment-là : deux membres du groupe avaient chacun écrit une version de l'algorithme d'apprentissage, et après discussion tendues, les deux membres ont travaillé ensemble à la réalisation du perceptron.
 
@@ -68,12 +92,14 @@ La taille du batch, toutefois, était une question différente : la conclusion q
 
 Tous nos calculs ont alors gagné en temps grâce à la machine virtuelle fournie par nos professeurs encadrants avec l'aide de l'école. L'un des membres de l'équipe disposait également d'une carte graphique NVIDIA 960M, mais au vu de la complexité d'utilisation du CUDA NVIDIA servant aux calculs mathématiques sur carte graphique, la décision a été prise de continuer sur la machine virtuelle.
 
-Le dernier point concernant les perceptrons est le point de la vitesse de convergence : nous avions, depuis le début, utilisé la fonction d'activation sigmoïde basique % TODO: (insérer formule). 
-Le changement de la fonction d'activation à un tanh pondéré % TODO: (formule)
+Le dernier point concernant les perceptrons est le point de la vitesse de convergence : nous avions, depuis le début, utilisé la fonction d'activation sigmoïde basique $f(x) = \frac{1}{1 + e^{-x}}$.
+ 
+Le changement de la fonction d'activation à un tanh pondéré $f(x) = 1.7159 \times tanh(\frac{2x}{3})$
 nous semblait au premier abord inefficace, voire semblait empirer les résultats. En effet, l'erreur de la reconnaissance des chiffres de la base MNIST ne convergeait même pas lors de nos tests avec la nouvelle fonction d'activation. 
 
 En réalité, l'extrême efficacité de cette fonction, suggérée encore une fois par LeCun, associée à nos taux d'apprentissage bien trop élevés, empêchaient la convergence du réseau de neurones. Quelques jours plus tard, le groupe se rendit compte que la même fonction d'activation, avec des taux extrêmement bas, convergeaient à une vitesse fulgurante, voire trop rapidement. Nous sommes donc passés d'un problème de convergence trop lente à une convergence trop rapide. 
 % TODO: (voir figure)
+
 
 Cette nouvelle efficacité nous a permis de déterminer une toute dernière caractéristique de la base MNIST : sa taille et sa diversité sont si grandes qu'il nous a été impossible d'atteindre l'état de surapprentissage.
 
@@ -81,7 +107,8 @@ Toutefois, étant légèrement en retard sur le planning de l'année, et sachant
 
 \section{Réseaux de neurones à convolutions}
 
-Cette discipline des réseaux neuronaux n'a été dans un premier temps que survolée, et le but a surtout été d'en connaître les détails théoriques, et le fonctionnement. Des exemples extrêmement simplifiés ont été présentés par l'équipe de Eponge. La mise en pratique des réseaux à convolution a été possible grâce à l'étape suivante : le maniement de tensorflow. 
+Cette discipline des réseaux neuronaux n'a été dans un premier temps que survolée, et le but a surtout été d'en connaître les détails théoriques, et le fonctionnement, afin de se familiariser avec les paramêtres de ce type de réseau et de visualiser son utilité dans le cas d'analyses d'images.
+ Des exemples extrêmement simplifiés ont été présentés par l'équipe de Eponge, mais la mise en pratique des réseaux à convolution complexes n'a été possible que grâce à l'étape suivante : le maniement de tensorflow. 
 
 \subsection{Tensorflow}
 
@@ -159,6 +186,4 @@ Malheureusement pour notre utilisation, l'état consiste en une image à $160 \t
 
 \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \bibliographystyle{unsrt}
-\bibliography{sample} % The file containing the bibliography
-
 \end{document}
