@@ -122,6 +122,13 @@ Nos conclusions nous ont mené, dans la suite de l'étude, à utiliser la foncti
 
 Le problème classique que l'on a choisi de résoudre avec un réseau de neurones est celui de la classification de chiffres manuscrits. pour cela, on utilise la base de données MNIST, un dataset disponible en ligne comprenant des dizaines de milliers d'images de $28\times 28$ pixels en nuances de gris, chacune représentant un chiffre entre $0$ et $9$, celui-ci étant fourni avec l'image. le perceptron que l'on va utiliser pour classifier l'image aura donc un vecteur d'entrée de taille $784$, et un vecteur de sortie de taille $10$. Dans la suite du rapport, les résultats seront donnés après un léger post-traitement: on choisira pour classifier un nombre, la coordonnée du vecteur de sortie étant maximale, et nos pourcentages de réussites seront fondés sur ce principe.
 
+\begin{figure}[h!]
+\includegraphics[width=0.8 \linewidth]{MNIST.png}
+\centering
+ \caption{exemple d'images tirées de la base de données MNIST}
+ \label{fig:MNIST}
+\end{figure}
+
 La suite consistait alors en la réalisation d'un réseau de neurones pouvant travailler sur la base de de données MNIST des chiffres manuscrits, et sachant à terme reconnaître les chiffres. Le premier souci en terme de travail d'équipe a été rencontré à ce moment-là : deux membres du groupe avaient chacun écrit une version de l'algorithme d'apprentissage, et après discussion tendues, les deux membres ont travaillé ensemble à la réalisation du perceptron. La nécessité d'utiliser les outils de programmation collectives tels GitHub d'une bonne manière s'est fait ressentir.
 
 Les premiers résultats différaient énormément des résultats théoriques, surtout en terme de vitesse de calcul et en taux d'apprentissage : alors qu'il devrait être de l'ordre de $10^{-4}$ pour obtenir une convergence précise et suffisante, nous pouvions monter jusqu'à $10^{-1}$ voire $1$, et toujours converger assez lentement. Ce problème restera dans notre code sans en trouver de réelle raison pendant environ $1$ mois.
@@ -130,11 +137,19 @@ Quant à la vitesse de calcul, elle était grandement affectée par le premier c
 
 Toutefois les valeurs des erreurs finales étaient des valeurs cohérentes, et nous avions donc décidé de travailler sur d'autres facteurs, tels que la taille des batch (qui n'étaient alors que de $1$), et l'initialisation du réseau.
 
-Les travaux de LeCun affirmaient que l'initialisation des valeurs des poids et des biais des neurones étaient à rendre aléatoires selon une loi normale centrée, et cela fut rapidement confirmé en voyant les courbes d'apprentissage des réseaux neuronaux avec des poids tous initialisés à $0$.
-% TODO: (figure)
+Les travaux de LeCun affirmaient que l'initialisation des valeurs des poids et des biais des neurones étaient à rendre aléatoires selon une loi normale centrée. Nous avons donc voulu tester différentes manières d'initialiser ces paramètres, ce qui nous a permis de rapidement exclure l'idée d'initialiser tous les poids à $0$, comme on le voit sur la figure 5. 
+\vspace{35mm}
+
+\begin{figure}[h!]
+\includegraphics[width=\linewidth]{initPoids.png}
+\centering
+ \caption{influence de l'initialisation des poids sur la vitesse (en nombre d'itérations de l'entrainement) de convergence }
+ \label{fig:initPoids.png}
+\end{figure}
+
 
 La taille du batch, toutefois, était une question différente : la conclusion qui nous est venue est la suivante : le meilleur compromis entre stabilité et précision de l'erreur finale est obtenu pour des batch de taille entre 16 et 32. Ces résultats sont appuyés par LeCun. 
-% TODO: (fr : twitter)
+% TODO: (fr : twitter) ; meubler un peu (compromis = qu'est ce qui donne quoi?)
 
 Le dernier point concernant les perceptrons est le point de la vitesse de convergence : nous avions, depuis le début, utilisé la fonction d'activation sigmoïde basique $f(x) = \frac{1}{1 + e^{-x}}$.
  
