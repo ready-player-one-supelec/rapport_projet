@@ -4,6 +4,7 @@
     oneside,
     headinclude,footinclude,
     BCOR=5mm,
+    captions=tableabove
 ]{scrartcl}
 
 \input{structure.tex}
@@ -14,6 +15,13 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \hyphenation{Fortran hy-phe-ation}
+
+\usepackage{graphicx}
+\usepackage{here}
+\usepackage{subfig}
+\captionsetup{figurename=Figure,margin=1cm,format=hang,font=small,format=plain,labelfont={bf,up},textfont={it}}
+\captionsetup[subfigure]{margin=0cm,font=small,format=plain,labelfont={bf,up},textfont={up}}
+
 
 \title{\normalfont{\spacedallcaps{Ready-Player-One}}}
 \subtitle{Rapport du groupe Harpon}
@@ -76,14 +84,13 @@ La mise en place de cette feuille de calcul a mis en évidence la complexité de
 \vspace{5mm}
 L'étape suivante fut donc la programmation en Python d'un réseau de neurones, celle-ci reposant sur la dualité entre parcours du réseau direct pour les calculs et inverse pour l'apprentissage (frontpropagation et backpropagation). La première difficulté rencontrée lors de la programmation a été la lenteur de nos algorithmes. En effet, des calculs qui auraient pu être effectués matriciellement (multiplication d'une couche par une matrice de poids et ajout de la matrice de biais pour obtenir l'entrée de la couche de neurones suivantes) étaient réalisés ligne par ligne à travers des listes. Le module numpy a donc été utilisé pour optimiser les calculs matriciels, améliorant la vitesse de calcul, comme on le voit sur la première courbe. L'utilisation de numpy, non essentielle pour nos premiers perceptrons approximants la fonctions XOR, fut nécessaire à l'apprentissage de réseaux plus grands, en particulier dans notre application suivante à la base de données MNIST pour lesquels les calculs passèrent de l'ordre de l'heure à la minute.
 
-
 \begin{figure}[h!]
 \includegraphics[width=\linewidth]{tpsCalcul.png}
 \centering
- \caption{rapports entre le temps de calcul d'une multiplication matricielle avec numpy et en itérant en fonction de la taille $n$ de la matrice. la vitesse est multipliée par  $n^{2}$ }
+ \caption{rapports entre le temps de calcul d'une multiplication matricielle avec numpy et en itérant selon la taille $n$ de la matrice. la vitesse est multipliée par  $n^{2}$ }
  \label{fig:tpsCalcul}
 \end{figure}
-\vspace{5mm}
+
 
  Chaque équipe a donc tenté lors de cette étape de coder sa version d'un réseau d'apprentissage du XOR, en utilisant pour commencer la fonction d'activation sigmoïde et un apprentissage stochasticque. Malgré la simplicité apparente de cette tâche, les résultats ont divergé, les réseaux n'arrivant pas à classifier correctement tous les cas du XOR s'il avait trop peu de neurones intermédiaires, comme on le voit sur la figure 3.
 
@@ -91,7 +98,24 @@ Le premier constat fut donc le suivant : L'assurance de la convergence de l'erre
 
 Ces résultats nous permettent de vérifier pour ce problème le théorème selon lequel tout problème de classification peut être traité efficacement par un perceptron n'ayant qu'une couche intermédiaire si cette couche est assez grande. la nécessité d'avoir une couche intermédiaire vient pour le cas du XOR, de la non linéarité du problème.
 
-Avant de s'atteler à une application plus complexe, nous avons pris du temps pour tester l'influence de différents paramètres sur la vitesse de convegernce. Nous avons isolé plusieurs hyperparamètres, à savoir  la facon d'initialiser les poids et biais, la vitesse d'apprentissage (ou plus généralement la fonction de minimisation qui pourra ne pas être un gradient simple), la façon de gérer notre set d'entrainement (batch training, stochastich training), mais aussi la fonction d'activation choisie.
+Avant de s'atteler à une application plus complexe, nous avons pris du temps pour tester l'influence de différents paramètres sur la vitesse de convegernce de notre perceptron vers la fonction XOR. 
+Nous avons isolé plusieurs hyperparamètres, à savoir  la facon d'initialiser les poids et biais, la vitesse d'apprentissage (ou plus généralement la fonction de minimisation qui pourra ne pas être un gradient simple), la façon de gérer notre set d'entrainement (batch training, stochastich training), la fonction d'activation choisie, ou encore la forme du réseau.
+
+
+\begin{figure}[H]
+\centering
+\subfloat[fonction sigmoïde, entrées non centrées]{\includegraphics[width=0.49 \linewidth]{XOR41SBSC.png}}
+\hspace{1mm}
+\subfloat[fonction sigmoïde, entrées centrées]{\includegraphics[width=0.49\linewidth]{XOR41SBSCT.png}}
+\vspace{2mm}
+\subfloat[fonction tanh, entrées non centrées]{\includegraphics[width=0.49 \linewidth]{XOR41TBSC.png}}
+\hspace{1mm}
+\subfloat[fonction tanh, entrées centrées]{\includegraphics[width=0.49\linewidth]{XOR41TBSCT.png}}
+
+\caption{comparaison du nombre d'itérations pour approximer la fonction XOR avec un réseau 2-4-1 en apprentissage Batch et stochastique selon différents paramètres}
+\end{figure}
+
+Nos conclusions nous ont mené, dans la suite de l'étude, à utiliser la fonction tangente hyperbolyque plutot qu'une sigmoïde, à centraliser et réduire les entrées, et à choisir des poids initialisés autour de zéro et des biais initialisés nuls.
 
 
 \subsection{application au problèmme de classification de chiffres manuscrits}
@@ -224,7 +248,7 @@ L'équipe se met à adapter le code existant concernant le Deep Q Learning sur p
 Lors de la programmation d'un système de Q-Learning, beaucoup de questions qui n'étaient pas à l'ordre du jour pour le développement d'un perceptron entrent en compte. En effet, on se trouve désormais en présence d'un système à apprentissage non supervisé, ce qui diffère grandement à l'entrainement sur les données de MNIST.
 
 L'objectif du Q-Learning est de calculer une fonction permettant au programme de choisir une action dans un ensemble d'actions $a \in A$ en présence d'un environnement ou état $s \in S$. Pour cela, on définit une fonction $Q: S \times A \rightarrow \mathbb{R}$ qui permet d'estimer la qualité du choix de $a$ dans l'état $s$. Il existe une fonction $R: S \rightarrow \mathbb{R}$ donnant la récompense associée à un état $s$. Cette fonction, qui présente très peu de valeurs non nulles, elle la seule manière d'avoir un retour sur la qualité des choix effectués. Elle annonce notamment les cas d'échec ou de succès pour le programme. Si l'espace d'état est de dimension assez faible, on peut estimer la fonction $Q$ par itérations, en connsaissant toutes les valeurs possibles. Cette fonction est donc définie par ce que l'on appelle une Q-table.
-$$Q(s,a) = (1-\alpha) Q(s,a) + \alpha (r + \gamma max_{a'} Q(s',a') )$$
+ $$Q(s,a) = (1-\alpha) Q(s,a) + \alpha (r + \gamma max_{a'} Q(s',a') )$$
 
 Malheureusement pour notre utilisation, l'état consiste en une image à $160 \times 160$ dimensions. Il est impossible d'énumérer tous les états, et donc de définir la fonction $Q$ par un tableau. On va donc faire appel à un système de réseau de neurones afin d'estimer cette fonction.
 
