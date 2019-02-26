@@ -65,7 +65,7 @@ De plus, il est utile de comprendre que les fonction d'activation choisies auron
 
 Enfin, le processus de minimisation se fait par des méthodes basés sur la méthode du gradient vectoriel:
 
- $Sys(n+1) = Sys(n) - Erreur[Syst(n)] \times Jacobienne(Erreur[Sys(n)]) ^{-1} $   
+ \hspace{4mm} $Sys(n+1) = Sys(n) - Erreur[Syst(n)] \times Jacobienne(Erreur[Sys(n)]) ^{-1} $   
 
 L'algorithme donc dépendre, en plus du choix de la fonction de coût et de la fonction d'activation des neurones, du choix de la méthode de minimisation et de ses paramètres associés (learning rate).
 \vspace{5mm}
@@ -99,7 +99,7 @@ Le premier constat fut donc le suivant : L'assurance de la convergence de l'erre
 Ces résultats nous permettent de vérifier pour ce problème le théorème selon lequel tout problème de classification peut être traité efficacement par un perceptron n'ayant qu'une couche intermédiaire si cette couche est assez grande. la nécessité d'avoir une couche intermédiaire vient pour le cas du XOR, de la non linéarité du problème.
 
 Avant de s'atteler à une application plus complexe, nous avons pris du temps pour tester l'influence de différents paramètres sur la vitesse de convegernce de notre perceptron vers la fonction XOR. 
-Nous avons isolé plusieurs hyperparamètres, à savoir  la facon d'initialiser les poids et biais, la vitesse d'apprentissage (ou plus généralement la fonction de minimisation qui pourra ne pas être un gradient simple), la façon de gérer notre set d'entrainement (batch training, stochastich training), la fonction d'activation choisie, ou encore la forme du réseau.
+Nous avons isolé plusieurs hyperparamètres, à savoir  la facon d'initialiser les poids et biais, la vitesse d'apprentissage (ou plus généralement la fonction de minimisation qui pourra ne pas être un gradient simple), la façon de gérer notre set d'entraînement (batch training, stochastich training), la fonction d'activation choisie, ou encore la forme du réseau.
 
 
 \begin{figure}[H]
@@ -130,8 +130,9 @@ Le problème classique que l'on a choisi de résoudre avec un réseau de neurone
 \end{figure}
 
 La suite consistait alors en la réalisation d'un réseau de neurones pouvant travailler sur la base de de données MNIST des chiffres manuscrits, et sachant à terme reconnaître les chiffres. Le premier souci en terme de travail d'équipe a été rencontré à ce moment-là : deux membres du groupe avaient chacun écrit une version de l'algorithme d'apprentissage, et après discussion tendues, les deux membres ont travaillé ensemble à la réalisation du perceptron. La nécessité d'utiliser les outils de programmation collectives tels GitHub d'une bonne manière s'est fait ressentir.
+\vspace{5mm}
 
-Les premiers résultats différaient énormément des résultats théoriques, surtout en terme de vitesse de calcul et en taux d'apprentissage : alors qu'il devrait être de l'ordre de $10^{-4}$ pour obtenir une convergence précise et suffisante, nous pouvions monter jusqu'à $10^{-1}$ voire $1$, et toujours converger assez lentement. Ce problème restera dans notre code sans en trouver de réelle raison pendant environ $1$ mois.
+Les premiers résultats différaient énormément des résultats théoriques, surtout en terme de vitesse de calcul et en taux d'apprentissage : alors qu'il devrait être de l'ordre de $10^{-4}$ pour obtenir une convergence précise et suffisante, nous pouvions monter jusqu'à $10^{-1}$ voire $1$, et toujours converger assez lentement. Ce problème restera dans notre code sans en trouver de réelle raison pendant environ 1 mois.
 
 Quant à la vitesse de calcul, elle était grandement affectée par le premier choix que nous avions fait de conserver les formules itératives des calculs de valeurs de neurones. L'équipe Eponge, en parallèle, avait un temps de calcul de l'ordre de la minute là où nous avions un temps de calcul de l'ordre de l'heure. Le passage de la forme itérative à la forme matricielle, pour le calcul des valeurs des réseaux de neurones optimisa grandement le temps de calcul, et est une preuve de l'incroyable efficacité des modules de calcul matriciel de Python. 
 
@@ -143,30 +144,50 @@ Les travaux de LeCun affirmaient que l'initialisation des valeurs des poids et d
 \begin{figure}[h!]
 \includegraphics[width=\linewidth]{initPoids.png}
 \centering
- \caption{influence de l'initialisation des poids sur la vitesse (en nombre d'itérations de l'entrainement) de convergence }
+ \caption{influence de l'initialisation des poids sur la vitesse de convergence (en nombre d'itérations de l'entraînement) }
  \label{fig:initPoids.png}
 \end{figure}
 
+Nous avons pour la suite du projet travaillé en "batch-training". Cette méthode d'apprentissage signifie que nous minimisons la fonction de coût selon la moyenne de son expression sur plusieurs entrées du set d'apprentissage, regroupées dans un batch.
 
-La taille du batch, toutefois, était une question différente : la conclusion qui nous est venue est la suivante : le meilleur compromis entre stabilité et précision de l'erreur finale est obtenu pour des batch de taille entre 16 et 32. Ces résultats sont appuyés par LeCun. 
-% TODO: (fr : twitter) ; meubler un peu (compromis = qu'est ce qui donne quoi?)
+La taille du batch, toutefois, était une question différente : des batchs plus petits, soit un modèle tendant vers un descente stochastique de gradient, permet d'augmenter la vitesse de l'apprentissage, mais le choix d'apprendre sur des batchs plus grands permet une plus grande robustesse à d'éventuels mauvaises données d'entraînement et donc de minimiser la fonction à chaque étape dans une direction plus proche de celle du minimum.
 
-Le dernier point concernant les perceptrons est le point de la vitesse de convergence : nous avions, depuis le début, utilisé la fonction d'activation sigmoïde basique $f(x) = \frac{1}{1 + e^{-x}}$.
- 
-Le changement de la fonction d'activation à un tanh pondéré $f(x) = 1.7159 \times tanh(\frac{2x}{3})$
-nous semblait au premier abord inefficace, voire semblait empirer les résultats. En effet, l'erreur de la reconnaissance des chiffres de la base MNIST ne convergeait même pas lors de nos tests avec la nouvelle fonction d'activation. 
+La conclusion qui nous est venue est la suivante : le meilleur compromis entre stabilité et précision de l'erreur finale est obtenu pour des batch de taille entre 16 et 32. Ces résultats sont appuyés par plusieurs travaux tiers cités par leCun. % TODO: ref bibliographique 
+\vspace{10mm}
 
-En réalité, l'extrême efficacité de cette fonction, suggérée encore une fois par LeCun, associée à nos taux d'apprentissage bien trop élevés, empêchaient la convergence du réseau de neurones. Quelques jours plus tard, le groupe se rendit compte que la même fonction d'activation, avec des taux extrêmement bas, convergeaient à une vitesse fulgurante, voire trop rapidement. Nous sommes donc passés d'un problème de convergence trop lente à une convergence trop rapide. 
+Le dernier point concernant les perceptrons est celui du choix de la vitesse d'apprentissage, un paramètre externe au réseau. celui-ci représente la taille du pas vers la minimisation de la fonction de coût que nous effectuons à chaque itération de l'entraînement.
+
+Nous avions, depuis le début, utilisé la fonction d'activation sigmoïde basique $f(x) = \frac{1}{1 + e^{-x}}$ dans chaque neurone de notre réseau, et donc utilisé des vitesses appropriées pour cette fonction.
+Néanmoins, au vu de ses meilleurs résultats sur XOR, nous avons voulu changer vers un réseau de neurones utilisant  la fonction d'activation tangente hyperbolique pondérée, $f(x) = 1.7159 \times tanh(\frac{2x}{3})$.
+
+En gardant un learning rate du même ordre, cette transition nous semblait au premier abord inefficace, voire semblait empirer les résultats. En effet, l'erreur de la reconnaissance des chiffres de la base MNIST ne convergeait même pas lors de nos tests avec la nouvelle fonction d'activation. 
+
+En réalité, l'extrême efficacité de cette fonction, suggérée encore une fois par LeCun, associée à nos taux d'apprentissage bien trop élevés, empêchaient la convergence du réseau de neurones: ainsi, en utilisant une descente de gradient simple, il existe un learning rate théorique maximal au delà duquel il est impossible de continuer de converger une fois proche d'un minimum de la fonction. 
+ Quelques jours plus tard, le groupe se rendit compte que la même fonction d'activation, avec des taux extrêmement bas, convergeaient à une vitesse fulgurante, voire trop rapide. %en quoi c'est un problème????
+\vspace{5mm}
+
+Une des solutions évoquées à cette problématique est de ne pas utiliser une descente de gradient simple avec un learning rate constant mais plutôt diverses méthodes plus complexes (RMSprop par exemple) qui modifient la vitesse d'apprentissage en fonction de la vitesse d'apprentissage aux étapes précédentes afin d'accélérer autour des zones plates de la fonction et de réduire la vitesse autour des minima.
 % TODO: (voir figure)
+\vspace{5mm}
 
-Enfin, ces fonctions d'activation comportant toutes une zone à pente forte (linéaire) autour de l'origine et une zone à pente faible (saturée) plus l'entrée augmente en valeur absolue, on a rapidement vu, pour augmenter la vitesse de l'apprentissage, l'intérêt de faire en sorte que l'entrée des neurones soit proche de $0$. Pour cela, nous avons associé à des poids initiallements centrés et faibles des entrées globales centrées et réduites entre $-1$ et $1$, ce qui a ouvert la voie à la posibilité de réaliser un prétraitement sur les entrées du réseau de neurones plus tard. un prétraitement plus complexe sera utilisé dans la suite. 
+\begin{figure}[h!]
+\includegraphics[width=\linewidth]{activations.PNG}
+\centering
+ \caption{différentes fonctions d'activation pouvant être utilisées dans des réseaux de neurones }
+ \label{fig:activations.PNG}
+\end{figure}
+
+Enfin, ces fonctions d'activation comportant une zone à pente forte (linéaire) autour de l'origine et une zone à pente faible (saturée) plus l'entrée augmente en valeur absolue, on a rapidement compris, pour augmenter la vitesse de l'apprentissage, l'intérêt de faire en sorte que l'entrée des neurones soit proche de $0$. 
+
+Pour cela, nous avons associé à des poids initiallements centrés et faibles des entrées globales centrées et réduites entre $-1$ et $1$, ce qui a ouvert la voie à la posibilité de réaliser un prétraitement sur les entrées du réseau de neurones plus tard. un prétraitement plus complexe sera utilisé dans la suite. 
 
 
-Cette nouvelle efficacité nous a permis de déterminer une toute dernière caractéristique de la base MNIST : sa taille et sa diversité sont si grandes qu'il nous a été impossible d'atteindre l'état de surapprentissage en s'entrainant sur la totalité du set d'entrainement.
+Cette nouvelle efficacité nous a permis de déterminer une toute dernière caractéristique de la base MNIST : sa taille et sa diversité sont si grandes qu'il nous a été impossible d'atteindre l'état de surapprentissage en s'entrainant sur la totalité du set d'entraînement.
 
-dans le même temps, nous avons rencontré une amélioration concrète de notre vitesss de  grâce à la machine virtuelle fournie par nos professeurs encadrants avec l'aide de l'école. L'un des membres de l'équipe disposait également d'une carte graphique NVIDIA 960M, mais au vu de la complexité d'utilisation du CUDA NVIDIA servant aux calculs mathématiques sur carte graphique, la décision a été prise de continuer sur la machine virtuelle.
+Dans le même temps, nous avons rencontré une amélioration concrète de notre vitesse de calcul grâce à la machine virtuelle fournie par nos professeurs encadrants avec l'aide de l'école. L'un des membres de l'équipe disposait également d'une carte graphique NVIDIA 960M, mais au vu de la complexité d'utilisation du CUDA NVIDIA servant aux calculs mathématiques sur carte graphique, la décision a été prise de continuer sur la machine virtuelle.
 
 Toutefois, étant légèrement en retard sur le planning de l'année, et sachant que nos algorithmes réalisaient à peu près ce qui était attendu d'un réseau de neurones, nous sommes passés à l'étape suivante du projet : l'apprentissage de la théorie des réseaux à convolution.
+\vfill
 
 \section{Réseaux de neurones à convolutions}
 
@@ -205,6 +226,10 @@ Une fois l'étape des CNN terminée, les profs encadrants nous ont donné pour b
 
 \section{Q-Learning}
 
+L'objectif du Q-Learning est de calculer une fonction permettant au programme de choisir une action dans un ensemble d'actions $a \in A$ en présence d'un environnement ou état $s \in S$. Pour cela, on définit une fonction $Q: S \times A \rightarrow \mathbb{R}$ qui permet d'estimer la qualité du choix de $a$ dans l'état $s$. Il existe une fonction $R: S \rightarrow \mathbb{R}$ donnant la récompense associée à un état $s$. Cette fonction, qui présente très peu de valeurs non nulles, elle la seule manière d'avoir un retour sur la qualité des choix effectués. Elle annonce notamment les cas d'échec ou de succès pour le programme. Si l'espace d'état est de dimension assez faible, on peut estimer la fonction $Q$ par itérations, en connsaissant toutes les valeurs possibles. Cette fonction est donc définie par ce que l'on appelle une Q-table.
+ $$Q(s,a) = (1-\alpha) Q(s,a) + \alpha (r + \gamma max_{a'} Q(s',a') )$$
+
+
 Le Q-learning s'est avéré plus complexe qu'espéré. 
 % TODO: [Go rajouter les images de Loic elles étaient bien]
 Nous avons donc décidé d'appliquer cette théorie  à un problème bien plus simple que le but final qu'est Pong. Nous avons donc écrit un algorithme de jeu proche de celui de Nim : un ensemble de 11 batons est présenté à chaque joueur, et chacun son tour, chaque joueur doit retirer 1 ou 2 batons. Le but étant de ne pas retirer le dernier baton.
@@ -213,6 +238,9 @@ Nous avons entraîné notre "intelligence" avec différents adversaires : un adv
 % TODO: [Courbes sur l'apprentissage des batons]
 
 L'étape suivante fut l'application sur un simili-labyrinthe, très simplifié. Encore une fois, les résultats étaient concluants, et la relative complexité du problème par rapport au jeu de Nim nous a permis pour la première d'introduire dans le Q-learning un réseau de neurones. Nous ne pouvions le faire précédemment car l'entrée de l'algorithme n'était en fait qu'un nombre : le nombre de batons restants. Il était donc impossible de donner "plus" ou "moins" de poids à différentes composantes de l'entrée, puisque celle-ci n'en avait qu'une.
+
+Malheureusement pour notre utilisation, l'état consiste en une image à $160 \times 160$ dimensions. Il est impossible d'énumérer tous les états, et donc de définir la fonction $Q$ par un tableau. On va donc faire appel à un système de réseau de neurones afin d'estimer cette fonction.
+
 
 L'étude préliminaire théorique du jeu de Pong a révélé plusieurs problématiques propres au jeu de pong :
 \begin{itemize}
@@ -260,12 +288,7 @@ Les résultats du Deep Q Learning sur Pong sont décevants. Le modèle semble ra
 
 L'équipe se met à adapter le code existant concernant le Deep Q Learning sur pong pour une utilisation de tensorflow. En effet, c'est le plus performant pour passer d'un perceptron multicouche à un réseau de convolution. De plus, avec un réseau développé sous tensorflow, il est très facile d'utiliser des cartes graphiques pour décupler les performances.
 
-Lors de la programmation d'un système de Q-Learning, beaucoup de questions qui n'étaient pas à l'ordre du jour pour le développement d'un perceptron entrent en compte. En effet, on se trouve désormais en présence d'un système à apprentissage non supervisé, ce qui diffère grandement à l'entrainement sur les données de MNIST.
-
-L'objectif du Q-Learning est de calculer une fonction permettant au programme de choisir une action dans un ensemble d'actions $a \in A$ en présence d'un environnement ou état $s \in S$. Pour cela, on définit une fonction $Q: S \times A \rightarrow \mathbb{R}$ qui permet d'estimer la qualité du choix de $a$ dans l'état $s$. Il existe une fonction $R: S \rightarrow \mathbb{R}$ donnant la récompense associée à un état $s$. Cette fonction, qui présente très peu de valeurs non nulles, elle la seule manière d'avoir un retour sur la qualité des choix effectués. Elle annonce notamment les cas d'échec ou de succès pour le programme. Si l'espace d'état est de dimension assez faible, on peut estimer la fonction $Q$ par itérations, en connsaissant toutes les valeurs possibles. Cette fonction est donc définie par ce que l'on appelle une Q-table.
- $$Q(s,a) = (1-\alpha) Q(s,a) + \alpha (r + \gamma max_{a'} Q(s',a') )$$
-
-Malheureusement pour notre utilisation, l'état consiste en une image à $160 \times 160$ dimensions. Il est impossible d'énumérer tous les états, et donc de définir la fonction $Q$ par un tableau. On va donc faire appel à un système de réseau de neurones afin d'estimer cette fonction.
+Lors de la programmation d'un système de Q-Learning, beaucoup de questions qui n'étaient pas à l'ordre du jour pour le développement d'un perceptron entrent en compte. En effet, on se trouve désormais en présence d'un système à apprentissage non supervisé, ce qui diffère grandement à l'entraînement sur les données de MNIST.
 
 \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \bibliographystyle{unsrt}
