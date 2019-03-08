@@ -114,7 +114,7 @@ Nous avons isolé plusieurs hyperparamètres, à savoir  la facon d'initialiser 
 \caption{comparaison du nombre d'itérations pour approximer la fonction XOR avec un réseau 2-4-1 en apprentissage Batch et stochastique selon différents paramètres}
 \end{figure}
 
-Nos conclusions nous ont mené, dans la suite de l'étude, à utiliser la fonction tangente hyperbolyque plutot qu'une sigmoïde, à centraliser et réduire les entrées, et à choisir des poids initialisés autour de zéro et des biais initialisés nuls.
+Nos conclusions nous ont menés, dans la suite de l'étude, à utiliser la fonction tangente hyperbolique plutot qu'une sigmoïde, à centraliser et réduire les entrées, et à choisir des poids initialisés autour de zéro et des biais initialisés nuls.
 
 \subsection{application au problèmme de classification de chiffres manuscrits}
 
@@ -182,9 +182,9 @@ Une des solutions évoquées à cette problématique est de ne pas utiliser une 
  \label{fig:activations.PNG}
 \end{figure}
 
-Enfin, ces fonctions d'activation comportant une zone à pente forte (linéaire) autour de l'origine et une zone à pente faible (saturée) plus l'entrée augmente en valeur absolue, on a rapidement compris, pour augmenter la vitesse de l'apprentissage, l'intérêt de faire en sorte que l'entrée des neurones soit proche de $0$. 
+Enfin, ces fonctions d'activation comportant une zone à pente forte (linéaire) autour de l'origine et une zone à pente faible (saturée) plus l'entrée augmente en valeur absolue, nous avons rapidement compris, pour augmenter la vitesse de l'apprentissage, l'intérêt de faire en sorte que l'entrée des neurones soit proche de $0$. 
 
-Pour cela, nous avons associé à des poids initiallements centrés et faibles des entrées globales centrées et réduites entre $-1$ et $1$, ce qui a ouvert la voie à la posibilité de réaliser un prétraitement sur les entrées du réseau de neurones plus tard. un prétraitement plus complexe sera utilisé dans la suite. 
+Pour cela, nous avons associé à des poids initialement centrés et faibles des entrées globales centrées et réduites entre $-1$ et $1$, ce qui a ouvert la voie à la possibilité de réaliser un prétraitement sur les entrées du réseau de neurones plus tard. Un prétraitement plus complexe sera utilisé dans la suite. 
 
 \vspace{5mm}
 Cette nouvelle efficacité nous a permis de déterminer une toute dernière caractéristique de la base MNIST : sa taille et sa diversité sont si grandes qu'il nous a été impossible d'atteindre l'état de surapprentissage en s'entrainant sur la totalité du set d'entraînement.
@@ -209,12 +209,12 @@ ce problème est résolu par les réseaux à convolutions. La particularité de 
 	\item des couches de corrections, permetant de recentrer les données de sorties par des fonctions d'activations (on utilise souvent ReLu)
 \end{itemize}
 
-les caractéristiques recherchées des CNN sont dues au fonctionnement des couches de convolutions : celles-ci vont déplacer une matrice filtre sur l'image d'entrée de manière à obtenir en sortie une image, un point de la matrice de sortie est le résultat de la convolution du filtre ( souvent choisi $3\times3$ ou $5\times5$) par un carré de la matrice d'entrée de même taille.
+Les caractéristiques recherchées des CNN sont dues au fonctionnement des couches de convolutions : celles-ci vont déplacer une matrice filtre sur l'image d'entrée de manière à obtenir en sortie une image, un point de la matrice de sortie est le résultat de la convolution du filtre ( souvent choisi $3\times3$ ou $5\times5$) par un carré de la matrice d'entrée de même taille.
 Ce type de filtrage lui confère les propriétés suivantes :
 \begin{itemize}
 	\item Premièrement, chaque sortie du filtre ne va plus dépendre de toutes les entrées mais d'un groupes d'entrées proches dans la matrice d'entrée. On va donc introduire la notion de localisation, ce qui va imposer de transmettre le vecteur d'entrée sous une forme adaptée.
 	\item Deuxièmement, on peut remarquer que l'association de la convolution avec le ReLU va faire en sorte que l'activation d'un neurone soit uniquement liée à la similarité du groupe de points de l'entrée auquel il correspond avec le filtre, et non de la position de l'entrée: le résultat est invariant par translation.
-	\item Enfin, ces propriétés permettent aux CNN d'obtenir une meilleure résistance aux erreurs dans l'estimation des paramètres des filtres puisque, pour un training set fixé, la quantité de données par paramètres est plus grande que pour un MLP. Le partage de poids permet aussi de réduire considérablement le nombre de paramètres à minimiser. On diminue donc les besoin en mémoire et en quantité d'opérations.
+	\item Enfin, ces propriétés permettent aux CNN d'obtenir une meilleure résistance aux erreurs dans l'estimation des paramètres des filtres puisque, pour un training set fixé, la quantité de données par paramètres est plus grande que pour un MLP. Le partage de poids permet aussi de réduire considérablement le nombre de paramètres à minimiser. On diminue donc les besoins en mémoire et en quantité d'opérations.
 \end{itemize}
 
 \begin{figure}[H]
@@ -226,7 +226,7 @@ Ce type de filtrage lui confère les propriétés suivantes :
 \end{figure}
 
 
-Le CNN va donc s'entraîner à adapter au mieux ses filtres pour pouvoir reconnaître au mieux les motifs (pattern detection) permettant la classification des entrées. comme dans le cas du MLP, nous allons étudier l'influence de plusieurs paramètres sur la vitesse d'aprentissages. 
+Le CNN va donc s'entraîner à adapter au mieux ses filtres pour pouvoir reconnaître au mieux les motifs (pattern detection) permettant la classification des entrées. Comme dans le cas du MLP, nous allons étudier l'influence de plusieurs paramètres sur la vitesse d'apprentissage. 
 
 \subsection{Tensorflow}
 
@@ -249,7 +249,7 @@ Une fois l'étape des CNN terminée, les profs encadrants nous ont donné pour b
 
 \section{Q-Learning}
 
-L'objectif du Q-Learning est de calculer une fonction permettant au programme de choisir une action dans un ensemble d'actions $a \in A$ en présence d'un environnement ou état $s \in S$. Pour cela, on définit une fonction $Q: S \times A \rightarrow \mathbb{R}$ qui permet d'estimer la qualité du choix de $a$ dans l'état $s$. Il existe une fonction $R: S \rightarrow \mathbb{R}$ donnant la récompense associée à un état $s$. Cette fonction, qui présente très peu de valeurs non nulles, elle la seule manière d'avoir un retour sur la qualité des choix effectués. Elle annonce notamment les cas d'échec ou de succès pour le programme. Si l'espace d'état est de dimension assez faible, on peut estimer la fonction $Q$ par itérations, en connsaissant toutes les valeurs possibles. Cette fonction est donc définie par ce que l'on appelle une Q-table.
+L'objectif du Q-Learning est de calculer une fonction permettant au programme de choisir une action dans un ensemble d'actions $a \in A$ en présence d'un environnement ou état $s \in S$. Pour cela, on définit une fonction $Q: S \times A \rightarrow \mathbb{R}$ qui permet d'estimer la qualité du choix de $a$ dans l'état $s$. Il existe une fonction $R: S \rightarrow \mathbb{R}$ donnant la récompense associée à un état $s$. Cette fonction, qui présente très peu de valeurs non nulles, est la seule manière d'avoir un retour sur la qualité des choix effectués. Elle annonce notamment les cas d'échec ou de succès pour le programme. Si l'espace d'état est de dimension assez faible, on peut estimer la fonction $Q$ par itérations, en connaissant toutes les valeurs possibles. Cette fonction est donc définie par ce que l'on appelle une Q-table.
  $$Q(s,a) = (1-\alpha) Q(s,a) + \alpha (r + \gamma max_{a'} Q(s',a') )$$
 
 
@@ -262,7 +262,7 @@ Nous avons entraîné notre "intelligence" avec différents adversaires : un adv
 
 L'étape suivante fut l'application sur un simili-labyrinthe, très simplifié. Encore une fois, les résultats étaient concluants, et la relative complexité du problème par rapport au jeu de Nim nous a permis pour la première d'introduire dans le Q-learning un réseau de neurones. Nous ne pouvions le faire précédemment car l'entrée de l'algorithme n'était en fait qu'un nombre : le nombre de batons restants. Il était donc impossible de donner "plus" ou "moins" de poids à différentes composantes de l'entrée, puisque celle-ci n'en avait qu'une.
 
-Malheureusement pour notre utilisation, l'état consiste en une image à $160 \times 160$ dimensions. Il est impossible d'énumérer tous les états, et donc de définir la fonction $Q$ par un tableau. On va donc faire appel à un système de réseau de neurones afin d'estimer cette fonction.
+Malheureusement pour notre utilisation, l'état consiste en une image à $160 \times 160$ dimensions. Il est impossible d'énumérer tous les états, et donc de définir la fonction $Q$ par un tableau. Il est donc nécessaire de faire appel à un système de réseau de neurones afin d'estimer cette fonction.
 
 
 L'étude préliminaire théorique du jeu de Pong a révélé plusieurs problématiques propres au jeu de pong :
@@ -311,7 +311,7 @@ Les résultats du Deep Q Learning sur Pong sont décevants. Le modèle semble ra
 
 L'équipe se met à adapter le code existant concernant le Deep Q Learning sur pong pour une utilisation de tensorflow. En effet, c'est le plus performant pour passer d'un perceptron multicouche à un réseau de convolution. De plus, avec un réseau développé sous tensorflow, il est très facile d'utiliser des cartes graphiques pour décupler les performances.
 
-Lors de la programmation d'un système de Q-Learning, beaucoup de questions qui n'étaient pas à l'ordre du jour pour le développement d'un perceptron entrent en compte. En effet, on se trouve désormais en présence d'un système à apprentissage non supervisé, ce qui diffère grandement à l'entraînement sur les données de MNIST.
+Lors de la programmation d'un système de Q-Learning, beaucoup de questions qui n'étaient pas à l'ordre du jour pour le développement d'un perceptron entrent en compte. En effet, on se trouve désormais en présence d'un système à apprentissage non supervisé, ce qui diffère grandement de l'entraînement sur les données de MNIST.
 
 \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \bibliographystyle{unsrt}
