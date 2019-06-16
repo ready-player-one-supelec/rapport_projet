@@ -115,6 +115,8 @@ Nous avons isolé plusieurs hyperparamètres, à savoir  la facon d'initialiser 
 \end{figure}
 
 Nos conclusions nous ont menés, dans la suite de l'étude, à utiliser la fonction tangente hyperbolique plutot qu'une sigmoïde, à centraliser et réduire les entrées, et à choisir des poids initialisés autour de zéro et des biais initialisés nuls.
+Nous utilisons même une tangente hyperbolique pondérée $f(x) = 1.7159 \times tanh(\frac{2x}{3})$ qui permet d'améliorer les résultats, principalement en accélérant les calculs de propagation par rapport à $f(x) = \frac{1}{1 + e^{-x}}$. Cette tangente hyperbolique pondérée a été proposée par Lecun. % ref
+
 
 \subsection{application au problèmme de classification de chiffres manuscrits}
 
@@ -168,7 +170,7 @@ Néanmoins, au vu de ses meilleurs résultats sur XOR, nous avons voulu changer 
 En gardant un learning rate du même ordre, cette transition nous semblait au premier abord inefficace, voire semblait empirer les résultats. En effet, l'erreur de la reconnaissance des chiffres de la base MNIST ne convergeait même pas lors de nos tests avec la nouvelle fonction d'activation. 
 
 En réalité, l'extrême efficacité de cette fonction, suggérée encore une fois par LeCun, associée à nos taux d'apprentissage bien trop élevés, empêchaient la convergence du réseau de neurones: ainsi, en utilisant une descente de gradient simple, il existe un learning rate théorique maximal au delà duquel il est impossible de continuer de converger une fois proche d'un minimum de la fonction. 
- Quelques jours plus tard, le groupe se rendit compte que la même fonction d'activation, avec des taux extrêmement bas, convergeaient à une vitesse fulgurante, voire trop rapide. %en quoi c'est un problème????
+Quelques jours plus tard, le groupe se rendit compte que la même fonction d'activation, avec des taux extrêmement bas, convergeaient à une vitesse fulgurante, voire trop rapide. %en quoi c'est un problème????
 \vspace{5mm}
 
 Une des solutions évoquées à cette problématique est de ne pas utiliser une descente de gradient simple avec un learning rate constant mais plutôt diverses méthodes plus complexes (RMSprop, Adam, une descente avec inertie...) qui modifient la vitesse d'apprentissage en fonction de la vitesse d'apprentissage aux étapes précédentes afin d'accélérer autour des zones plates de la fonction et de réduire la vitesse autour des minima.
@@ -282,12 +284,62 @@ D'autres problèmes d'un autre genre se sont présentés à nous lors de l'utili
 	
 Une fois ces quelques problèmes surmontés, les premiers tests d'intelligence artificielle pour pong ont été effectués. Et les résultats sont les suivants :
 
+Les principes du Q-Learning et des réseaux de neurones étant expliqués, il est temps pour l’équipe de mélanger les deux algorithmes. La problématique est la suivante : nous aimerions appliquer l’apprentissage par Q-Learning à pong où un état serait représenté par une image. Toutefois, la taille de l’espace des états étant tellement grande (de l’ordre de quelques centaines de millions d’états), qu’une Q-Table basée sur l’état du jeu serait inutile : la probabilité de retomber sur un état déjà visité étant proche de 0.
+
+Nous introduisons alors un réseau de neurones, prenant la représentation du jeu en entrée, et qui a pour but d’estimer la valeur de Q. Dans notre cas, deux types d’implémentation sont possibles :
+\begin{itemize}
+\item Le réseau prend en entrée l’état et l’action, et renvoie la qualité de l’association état/action (elle fait office à proprement parler de fonction de qualité Q)
+\item Le réseau prend en entrée l’état, et possède N sorties (N étant le nombre d’actions possibles), qui correspondent aux qualités des arcs respectifs. Le cas de pong est plutôt simple puisque l’on n’autorise que deux actions : haut et bas.
+\end{itemize}
+
+La première chose à faire est d’essayer cette implémentation à l’aide d’un perceptron classique, sans convolution. Avec un perceptron à une couche de 1000 neurones, l’apprentissage est plutôt « rapide », mais quelque chose cloche : le réseau a en fait appris tous les chemins comme étant des chemins perdants, puisqu’il a passé bien plus de temps à perdre qu’à gagner, et que les états gagnants et perdants sont visuellement très proches (le perceptron n’arrive pas à les distinguer).
+
+La chose qui semble alors logique afin d’éviter ce problème est de passer à des CNN, afin d’ajouter une dimension de « localité » aux patterns détectés.
+
+Pour vérifier l’implémentation correcte de notre Q-Learning par réseau de neurones, nous tentons d’abord de l’appliquer sur un jeu « trivial » qu’est le jeu de Nim. Le jeu de Nim est un jeu très simple qui se joue à deux joueurs. Un certain nombre d’allumettes sont alignées, et les joueurs jouent chacun leur tour, en retirant entre 1 et 3 allumettes. Le joueur gagnant est celui qui retire la dernière allumette.
+
+Nous sommes donc en présence d’un jeu, avec l’un des joueurs étant le réseau et l’autre étant une intelligence pré-codée, avec différents états (le nombre d’allumettes faisant office d’états) et différentes actions (prendre 1,2 ou 3 allumettes). Un perceptron a été mis à l’épreuve au jeu de Nim, et les résultats ont été tout à fait concluants (mettre des graphes, pipoter, etc...)
+
+Vient maintenant le tour de pong, et sa complexité infiniment supérieure à celle du jeu de Nim.
+
+L'équipe se heurte alors à un obstacle : les temps de calcul. La convergence du réseau à convolution sur l’image de pong semble être trop lente pour aboutir à des résultats concluants sans avoir à faire tourner le programme pendant plusieurs jours voire semaines (les simulations étaient effectuées sur une carte graphique NVIDIA GTX 1050 Ti). Des solutions alternatives commencent alors à être envisagées :
+\begin{itemize}
+\item Récompenser le réseau non plus seulement sur son taux de victoire mais également sur son temps de survie. Effectivement, on peut imaginer qu’avec ce système de récompense, le réseau aura tendance à enregistrer les différents mouvements à effectuer en fonction de l’image pour pouvoir renvoyer la balle.
+Ce système de « récompenses intermédiaires » a été pensé en analogie avec une voiture sur un circuit qui devrait apprendre au fur et à mesure comment progresser sur ce circuit, et aurait pour but d’accompagner le réseau sur son apprentissage.  %(slide 8 mars 2019)
+\item Utiliser non pas l’image du jeu, mais des « features », c’est-à-dire des valeurs scalaires décrivant l’état actuel de l’image de façon parfaite. Un exemple de features utilisables sur pong est : position des raquettes, position de la balle, vitesses horizontales et verticales de la balle, ce qui fait un total de 6 features, décrivant un unique état. Nous aurions donc en entrée du réseau 6 valeurs, et en sortie une ou deux valeurs, en fonction de la manière dont a été codée le réseau.
+\item Pré-traiter l’image afin d’appliquer un gros contraste sur les éléments intéressants du jeu sans en perdre l’information. Le pré-traitement que l’on trouve généralement dans les implémentations de réseaux de neurones pour l’apprentissage de pong est le suivant : donner la valeur 0 à tous les éléments d’arrière-plan, donner la valeur 1 à tous les « sprites » (balle, raquettes), et effectuer la différence de deux images consécutives (les raquettes étant obligées de se déplacer, et la balle étant en mouvement), afin d’obtenir une image qui contient la vitesse et la position de la balle, ainsi que les directions et les positions des deux raquettes. Eventuellement réduire la taille de l’image pour simplifier le réseau.
+\end{itemize}
+
+Le problème moral de ces implémentations intermédiaires est le fait d’aider le réseau. Plus le réseau a besoin d’aide, moins il est indépendant, et moins le sentiment d’avoir « fait apprendre à la machine » est présent. Par exemple, la décision de prendre des features arbitraires donne un sentiment de « triche » qui va à l’encontre du but final du projet. 
+
+L’une des solutions serait justement de ne pas choisir de features arbitraires, mais de laisser un réseau de neurones « choisir » ces features, à l’aide d’un auto-encodeur. Le principe est le suivant : l’auto-encodeur est un réseau de neurones comportant des couches en « sablier », il prend l’image en entrée et a pour but de retransmettre cette image en sortie. La couche de « features » est une des couches intermédiaires du réseau. %(image du 8 mars 2019)
+
+Les différentes implémentations ont été essayées… sans succès. Vous trouverez les courbes correspondantes à différentes implémentations ci-dessous.
+
+% (là jsp mets des courbes random qui bougent pas en disant « oua c nul »)
+
+Cette étape du projet a conduit à quelques semaines de désespoir pour toute l’équipe, l’atteinte du but du projet semblait bel et bien impossible. Les semaines s’enchaînaient, en s’interrogeant toujours plus sur les résultats obtenus par les différents articles de référence, leur puissance de calcul nécessaire et disponible…
+
+Les professeurs encadrants constatant l’exaspération des élèves décidèrent de mettre de côté le problème visiblement trop complexe qu’est pong, pour se pencher sur un autre environnement fourni par le module python gym, appelé cartpole, ainsi que sur un mini-jeu codé par un élève de l’équipe Eponge, une variante du jeu mobile « Flappy Bird ».
+
+\paragraph{Principe de Flappy bird :}
+Un oiseau soumis à la gravité doit passer au travers d’obstacles consécutifs en passant par une ouverture. Les deux actions possibles sont « aller vers le haut » ou « ne rien faire ».
+
+Le réseau peut prendre en entrée l’image ou des features adéquates (nous nous sommes contentés des features pour l’apprentissage afin de vérifier l’implémentation de nos réseaux de neurones associés au Q-Learning), et le résultat était plutôt convaincant.
+
+\paragraph{Principe de Cartpole :}
+Un pendule retourné attaché à un chariot doit rester en équilibre le plus longtemps possible. Le réseau a deux actions possibles : diriger le chariot vers la gauche ou vers la droite. Encore une fois, le réseau dispose de features associées à l’état du chariot.
+
+L’une des particularités des implémentations de Cartpole est l’utilisation de deux réseaux de neurones synchronisés périodiquement. En effet, l’apprentissage du réseau « principal » met en jeu les résultats du réseau principal (la sortie théorique dépend d’autres sorties du même réseau, etc…), et peut provoquer l’oscillation de tout le système. Le moyen de contrebalancer ce problème est de produire un réseau « secondaire » duquel dépendront les sorties théoriques du réseau principal, et qui sera synchronisé périodiquement.
+
+% (Ajouter résultats de Cartpole)
+
+
 \paragraph{Semaine du 10 octobre}
 
 La semaine a été consacrée à l'amélioration des premier résultats obtenus sur XOR, mais surtout sur MNIST.
 
 % TODO: Ajouter la référence de ce conseil
-L'utilisation de la tangente hyperbolique $f(x) = 1.7159 \times tanh(\frac{2x}{3})$ a permis d'améliorer les résultats, principalement en accélérant les calculs de propagation par rapport à $f(x) = \frac{1}{1 + e^{-x}}$.
 
 Les fonctions permettant de sauvegarder et de charger un perceptron après apprentissage dans un fichier ont été rajoutées. Mais la structure de donnée de l'autre groupe n'est pas forcément identique, il faut donc se mettre d'accord sur un format de fichier commun. Il sera ensuite possible de vérifier le comportement de propagation des deux perceptrons, qui devrait être identique.
 
@@ -312,6 +364,16 @@ Les résultats du Deep Q Learning sur Pong sont décevants. Le modèle semble ra
 L'équipe se met à adapter le code existant concernant le Deep Q Learning sur pong pour une utilisation de tensorflow. En effet, c'est le plus performant pour passer d'un perceptron multicouche à un réseau de convolution. De plus, avec un réseau développé sous tensorflow, il est très facile d'utiliser des cartes graphiques pour décupler les performances.
 
 Lors de la programmation d'un système de Q-Learning, beaucoup de questions qui n'étaient pas à l'ordre du jour pour le développement d'un perceptron entrent en compte. En effet, on se trouve désormais en présence d'un système à apprentissage non supervisé, ce qui diffère grandement de l'entraînement sur les données de MNIST.
+
+\section*{Conclusion}
+Le projet a sans aucun doute été une expérience extrêmement enrichissante pour tous les étudiants des deux équipes. Certes, le but final qui était de produire une intelligence artificielle pouvant jouer à pong n’a pas été atteint, toutefois nous avons réussi à intégrer cette solution à des systèmes moins complexes comme cartpole ou Flappy Bird. Nous manquions de temps et de moyens techniques pour pouvoir reproduire les résultats de nos articles de référence.
+
+Toutefois, le temps nous ayant manqué, nous avions encore pas mal de pistes à explorer :
+
+\begin{itemize}
+\item Modifier la multitude d’hyperparamètres (taille des filtres, nombre de filtres, pas des filtres, nombre de couches, nombre de neurones, vitesse d’apprentissage, taux d’exploration, taux de rafraîchissement, etc…) de notre réseau afin de trouver un ensemble de paramètres permettant une performance suffisante pour obtenir une convergence d’un réseau qui gagne à pong en un temps correct.
+\item Trouver un différent pré-traitement de l’image tel que les informations n’en soient pas perdues, tout en ne la déformant pas trop.
+\end{itemize}
 
 \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \bibliographystyle{unsrt}
