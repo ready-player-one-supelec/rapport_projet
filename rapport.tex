@@ -299,8 +299,16 @@ L'étude préliminaire théorique du jeu de Pong a révélé plusieurs probléma
 \begin{itemize}
 	\item L'utilisation d'un réseau de neurones est absolument nécessaire : utiliser simplement l'observation comme indexeur d'états donnerait un ensemble d'états possible bien trop grand (position de la balle, des joueurs, changement du score, etc...)
 	\item Ce réseau de neurones sera a priori un réseau à convolution, puisque la problématique de la detection de "patterns" et de leur positionnement est primordiale en jouant à Pong.
-	\item L'utilisation des 3 couleurs (RGB) n'est pas forcément utile, on se limitera par exemple à une combinaison linéaire du rouge et du bleu, qui donnent le plus de contraste entre les différents éléments de l'écran.
+	\item L'utilisation des 3 couleurs (RGB) n'est pas forcément utile, on se limitera par exemple à une combinaison linéaire du rouge et du bleu, qui donnent le plus de contraste entre les différents éléments de l'écran (voir figure \ref{fig:pong-plateau})
 \end{itemize}
+
+\begin{figure}
+\subfloat[Plateau initial de pong]{\includegraphics[width=0.49\linewidth]{pong-plateau.png}}
+\subfloat[Plateau filtré]{\includegraphics[width=0.49\linewidth]{pong-filter.png}}
+\centering
+\caption{Prétraitement du plateau de Pong}
+\label{fig:pong-plateau}
+\end{figure}
 
 D'autres problèmes d'un autre genre se sont présentés à nous lors de l'utilisation des différents modules :
 \begin{itemize}
@@ -404,7 +412,17 @@ Un pendule retourné attaché à un chariot doit rester en équilibre le plus lo
 L’une des particularités des implémentations de Cartpole est l’utilisation de deux réseaux de neurones synchronisés périodiquement. En effet, l’apprentissage du réseau « principal » met en jeu les résultats du réseau principal (la sortie théorique dépend d’autres sorties du même réseau, etc…), et peut provoquer l’oscillation de tout le système. Le moyen de contrebalancer ce problème est de produire un réseau « secondaire » duquel dépendront les sorties théoriques du réseau principal, et qui sera synchronisé périodiquement.
 
 Pour notre part, nous avons essayé l'implémentation avec un seul réseau. Il nous a permis de dépasser le score de 200 à CartPole, mais pas le maximum. Nous n'avons donc pas encore observé d'instabilité à ce jour.
-% (Ajouter résultats de Cartpole)
+
+\begin{figure}
+\includegraphics[width=\linewidth]{cartpole_1.png}
+\centering
+\caption{Résultats sur CartPole sur 100 runs simultanés}
+\label{fig:cartpole_1}
+\end{figure}
+
+Les résultats sont donc satisfaisants, et concordent avec d'autres implémentations proposées par différentes personnes en ligne. On s'aperçoit ici de l'instabilité mentionnée lorsqu'on utilise un seul réseau neuronal.
+En effet, la chute de résultats à la fin de la figure \ref{fig:cartpole_1} est accompagnée d'une augmentation de l'intervalle de confiance.
+Une partie des courbes de score, qui étaient jusque lors presque confondues proche de la moyenne, fini par retomber proche d'un score nul, alors que le reste continue à lentement progresser.
 
 \newpage
 \section*{Conclusion}
