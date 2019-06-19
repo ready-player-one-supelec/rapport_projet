@@ -353,6 +353,16 @@ Néanmoins, au vu des difficultés à faire fonctionner notre programme pour Pon
 	\item Faire osciller le taux d'exploration pour éviter de se retrouver dans un minimum local non performant, tout en explorant convenablement les stratégies intéressantes.
 \end{itemize} 
 
+\paragraph{Memory replay}
+L'utilisation de moteur de jeu et/ou de rendu rend assez lente la création de données utiles pour que l'algorithme puisse apprendre. Couplé à la vitesse de convergence par définition assez lente, le problème de temps de calcul reste un défi.
+
+Pour y remédier, l'une des solutions notamment proposées dans l'article de Deep Mind dans Nature s'appelle le \textit{memory replay}.
+
+Cette méthode consiste à enregistrer un grand nombre de transitions d'état (état, action, récompense, état suivant) dans une mémoire de taille fixée (plusieurs dizaines de milliers de coups) afin des les faire réapprendre plus tard par le réseau.
+On peut donc à chaque coup réalisé en faire apprendre 32 à notre programme.
+
+Cela permet de plus de ne pas oublier les premiers enseignements de notre réseau.
+
 \subsection{Résultats sur Pong}
 L'un des principaux problèmes du Q-learning auxquels nous avons été confrontés est apparu assez clairement lors de l'entrainement de l'algorithme sur le jeu Pong : l'intelligence jouant pratiquement au hasard au début de son entrainement, elle a très peu de chance de gagner et donc d'apprendre des stratégies gagnantes.
 Elle se contente d'apprendre à ne pas perdre, et cela ralentit considérablement la vitesse de convergence.
