@@ -423,7 +423,13 @@ Comme souvent lors de l'expérimentation de ce genre d'algorithme, il est assez 
 Nous avons cependant supposé que l'apprentissage du passage de la première porte étant assez différent de celui des autres portes (le plateau est différent), arrivé à un score assez haut, l'algorithme oublie comment passe cette première porte, puisqu'il s'entraîne plutôt à passer les suivantes.
 
 \paragraph{Principe de Cartpole :}
-Un pendule retourné attaché à un chariot doit rester en équilibre le plus longtemps possible. Le réseau a deux actions possibles : diriger le chariot vers la gauche ou vers la droite. Encore une fois, le réseau dispose de features associées à l’état du chariot.
+Un pendule retourné attaché à un chariot doit rester en équilibre le plus longtemps possible. Le réseau a deux actions possibles : diriger le chariot vers la gauche ou vers la droite (voir figure \ref{fig:cartpole-plateau}). Encore une fois, le réseau dispose de features associées à l’état du chariot.
+\begin{figure}
+\includegraphics[width=\linewidth]{cartpole-plateau.png}
+\centering
+\caption{Présentation du plateau de jeu CartPole}
+\label{fig:cartpole-plateau}
+\end{figure}
 
 L’une des particularités des implémentations de Cartpole est l’utilisation de deux réseaux de neurones synchronisés périodiquement. En effet, l’apprentissage du réseau « principal » met en jeu les résultats du réseau principal (la sortie théorique dépend d’autres sorties du même réseau, etc…), et peut provoquer l’oscillation de tout le système. Le moyen de contrebalancer ce problème est de produire un réseau « secondaire » duquel dépendront les sorties théoriques du réseau principal, et qui sera synchronisé périodiquement.
 
