@@ -238,9 +238,14 @@ A cette période de l'année, nous avons eu l'accès à une machine virtuelle po
 Nous avons donc, pour commencer, appliqué un tutoriel basique d'apprentissage sur MNIST, en CNN, fourni par tensorflow. Nous apprendrons plus tard que ce tutoriel utilisait des fonctions obsolètes, nous empêchant de travailler avec tensorboard, l'interface graphique de tensorflow. Toutefois, les résultats en terme d'efficacité de tensorflow étaient bien plus optimisés que nos réseaux neuronaux, et la grande diversité de paramètres nous a introduit à un concept qui ne nous avait pas intéressés jusque-là : le dropout.
 
 \paragraph{Dropout}
-Le dropout consiste à désactiver un certain pourcentage de neurones de façon aléatoire (probabilité d'activation du neurone fixé en paramètre). Ce système d'apprentissage " partiel " permet en réalité aux neurones d'être moins dépendants des neurones précédents, et donc plus dépendants de l'entrée en elle-même, mais surtout permet d'éviter le surapprentissage. Toutefois, comme vu auparavant, la base MNIST de par sa taille et sa diversité empêche en elle-même le surapprentissage, ce concept sera donc à garder pour d'autres éventuels systèmes neuronaux.
-Un example de dropout est présenté dans la figure \ref{fig:dropout.PNG}.
+Le dropout consiste à désactiver un certain pourcentage de neurones de façon aléatoire (probabilité d'activation du neurone fixé en paramètre). Ce système d'apprentissage " partiel " permet en réalité aux neurones d'être moins dépendants des neurones précédents, et donc plus dépendants de l'entrée en elle-même, mais surtout permet d'éviter le surapprentissage. 
 
+Nous avons en effet commmencé à prendre en considération taux de dropout lors de notre passsage à tensorflow car ce module permet de modifier cet hyperparamètre, c'est-à-dire la probabilité qu'a un neurone d'être ignoré pendant l'aprentissage, assez facilement sans toucher au reste du réseau. Nous avons donc étudié l'influence de cette probabilité dans un cas fixe, l'apprentissage de la base de données MNIST Par un MLP de taille raisonnable (64-32).
+Néanmoins, comme vu auparavant, la base MNIST de par sa taille et sa diversité empêche en elle-même le surapprentissage, nous n'avons par conséquent pas vu de différence. 
+
+Ce concept sera donc à garder pour d'autres éventuels systèmes neuronaux. Son utilité dans le cas d'un AutoEncoder sera observée plus tard (voir plus bas) et il sera souvent fixé à une valeur de l'ordre de 25\% lors de l'utilisations de MLPs par le Deep Q-Learning.
+
+Un example de dropout est présenté dans la figure \ref{fig:dropout.PNG}.
 \begin{figure}[h!]
 \includegraphics[width=\linewidth]{dropout.PNG}
 \centering
@@ -248,6 +253,7 @@ Un example de dropout est présenté dans la figure \ref{fig:dropout.PNG}.
 \label{fig:dropout.PNG}
 \end{figure}
 
+\newpage
 Nous avons eu l'occasion de discuter avec un ancien élève de Supélec lors de l'une des nombreuses réunions de projet, qui travaillait également avec tensorflow sur de l'analyse de signaux. Cet élève nous a gracieusement fourni un code tensorflow, utilisant des fonctions actuellement à jour, et permettant la visualisation en direct de tensorboard et des différents graphiques liés à nos réseaux de neurones. Si la partie graphique de tensorboard est assez intuitive à prendre en main, la déconcertante complexité du code nécessaire à son bon fonctionnement a été une embûche à notre avancement.
 
 Une fois l'étape des CNN terminée, les profs encadrants nous ont donné pour but de travailler sur le Q-learning : une théorie de l'apprentissage par machine tout à fait différente des perceptrons, avec des cas d'applications tout aussi différents.
