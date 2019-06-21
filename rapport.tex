@@ -52,29 +52,29 @@ L'interêt du projet étant la compréhension des mécanismes des réseaux de ne
 \section{Réalisation du perceptron}
 
 \subsection{Premières approches}
-La première étape de notre projet conserne la création d'un perceptron (ou MLP). pour cela, nous avons d'abord eu une approche théorique, afin de comprendre ce qu'était un réseau de neurones au niveau mathématique et en quoi il pouvait présenter une solution pour résoudre numériquement un problème de classification dans un espace à n dimensions. Pour celà, nous nous sommes évidemment appuyés sur les travaux fondateur de Yann LeCun, et ceux-ci nous serviront régulièrement par la suite. 
+La première étape de notre projet concerne la création d'un perceptron (ou MLP). pour cela, nous avons d'abord eu une approche théorique, afin de comprendre ce qu'était un réseau de neurones au niveau mathématique et en quoi il pouvait présenter une solution pour résoudre numériquement un problème de classification dans un espace à n dimensions. Pour celà, nous nous sommes évidemment appuyés sur les travaux fondateurs de Yann LeCun, et ceux-ci nous serviront régulièrement par la suite. 
 
 \paragraph{Fonction d'erreur}
 L'important a été de comprendre en quoi la minimisation d'une fonction d'erreur était faisable en temps fini. Pour celà on s'interesse à la fonction associant un vecteur d'entrée et les paramètres (Poids, Biais) liés à chaque neurone à un vecteur de sortie du réseaux de neurones. Cette opération complexe est réalisées par applications successives des fonctions d'activations liées à chaque couche de neurones aux résultats (pondérés par des poids et biais) de la couche précédentes. 
-Le calcul de ce tte fonction est noté dans ce futur rapport comme frontpropagation ou propagation directe.
+Le calcul de cette fonction est noté dans ce futur rapport comme frontpropagation ou propagation directe.
 
-La fonction d'erreur mentionnée plus haut représentant la distance entre les sorties de la frontpropagations pour un vecteur d'entrées et les sorties voulues pour cette entrée, le principe du réseau de neurone va être de minimiser cette erreur en utilisant sa dérivée par rapports au différents paramètres du réseau. On remarque rapidement que le calcul d'une dérivée par rapport à un poids ou biais associé à un neurone d'une couche donnée va faire intervenir toutes les dérivées par rapports aux couches suivantes. le calcul de la déroulée va donc se faire dans le sens indirect, d'où l'usage du terme backpropagation.
+La fonction d'erreur mentionnée plus haut représentant la distance entre les sorties de la frontpropagations pour un vecteur d'entrées et les sorties voulues pour cette entrée, le principe du réseau de neurone va être de minimiser cette erreur en utilisant sa dérivée par rapport au différents paramètres du réseau. On remarque rapidement que le calcul d'une dérivée par rapport à un poids ou biais associé à un neurone d'une couche donnée va faire intervenir toutes les dérivées par rapports aux couches suivantes. Le calcul de la déroulée va donc se faire dans le sens indirect, d'où l'usage du terme backpropagation.
 
 \paragraph{Fonctions d'activation}
-De plus, il est utile de comprendre que les fonction d'activation choisies auront la propriété utile de permettre en temps réduit le calcul de leur dérivée en fonction de leur résultat : on a pour tout $x$, $f'(x)=G(f(x))$ , ce qui va permettre, en retenant les résultats de chaque neurone pour la propagation directe, d'effectuer rapidement la propagation indirecte. 
+De plus, il est utile de comprendre que les fonctions d'activation choisies auront la propriété utile de permettre en temps réduit le calcul de leur dérivée en fonction de leur résultat : on a pour tout $x$, $f'(x)=G(f(x))$ , ce qui va permettre, en retenant les résultats de chaque neurone pour la propagation directe, d'effectuer rapidement la propagation indirecte. 
 
-Enfin, le processus de minimisation se fait par des méthodes basés sur la méthode du gradient vectoriel:
+Enfin, le processus de minimisation se fait par des méthodes basées sur la méthode du gradient vectoriel:
 
 $$Sys(n+1) = Sys(n) - Ereur[Sys(n)] \times Jacobienne(Erreur[Sys(n)]) ^{-1} $$ 
 
-L'algorithme donc dépendre, en plus du choix de la fonction de coût et de la fonction d'activation des neurones, du choix de la méthode de minimisation et de ses paramètres associés (learning rate).
+L'algorithme va donc dépendre, en plus du choix de la fonction de coût et de la fonction d'activation des neurones, du choix de la méthode de minimisation et de ses paramètres associés (learning rate).
 
 \subsection{Mise en évidence du fonctionnement d'un perceptron}
 Avant de commencer la programmation d'un perceptron, il a fallu commencer par comprendre le fonctionnement opération par opération d'un neurone. Une feuille de calcul a donc été mise en place pour calculer à la main une itération de l'apprentissage d'un réseau de neurones de la fonction XOR à deux entrées avec rétropropagation, après visualisation par tous les étudiants du groupe d'une vidéo très bien réalisée sur le fonctionnement des réseaux neuronaux.
 
 La mise en place de cette feuille de calcul a mis en évidence la complexité des opérations effectuées par les réseaux de neurones, ainsi que l'impossibilité d'effectuer tous les calculs à la main. Toutefois ce premier exemple de réseaux a permis à l'ensemble de l'équipe de comprendre comment se comportait un réseau de neurones à plusieurs couches, et leur a permis de se lancer dans le vif du sujet. 
 
-\begin{figure}[!h]
+\begin{figure}
 \includegraphics[width=\linewidth]{excelXOR.png}
 \centering
 \caption{Modélisation d'un apprentissage sur une entrée pour un réseau 2-2-1 sur Excel}
@@ -84,14 +84,14 @@ La mise en place de cette feuille de calcul a mis en évidence la complexité de
 \subsection{Implémentation du perceptron}
 L'étape suivante fut donc la programmation en Python d'un réseau de neurones, celle-ci reposant sur la dualité entre parcours du réseau direct pour les calculs et inverse pour l'apprentissage (frontpropagation et backpropagation). La première difficulté rencontrée lors de la programmation a été la lenteur de nos algorithmes. En effet, des calculs qui auraient pu être effectués matriciellement (multiplication d'une couche par une matrice de poids et ajout de la matrice de biais pour obtenir l'entrée de la couche de neurones suivantes) étaient réalisés ligne par ligne à travers des listes. Le module numpy a donc été utilisé pour optimiser les calculs matriciels, améliorant la vitesse de calcul, comme on le voit sur la première courbe. L'utilisation de numpy, non essentielle pour nos premiers perceptrons approximants la fonctions XOR, fut nécessaire à l'apprentissage de réseaux plus grands, en particulier dans notre application suivante à la base de données MNIST pour lesquels les calculs passèrent de l'ordre de la minute à l'heure.
 
-\begin{figure}[h!]
+\begin{figure}
 \includegraphics[width=\linewidth]{tpsCalcul.png}
 \centering
 \caption{Rapports entre le temps de calcul d'une multiplication matricielle avec numpy et en itérant selon la taille $n$ de la matrice. la vitesse est multipliée par  $n^{2}$ }
 \label{fig:tpsCalcul}
 \end{figure}
 
-Chaque équipe a donc tenté lors de cette étape de coder sa version d'un réseau d'apprentissage du XOR, en utilisant pour commencer la fonction d'activation sigmoïde et un apprentissage stochasticque. Malgré la simplicité apparente de cette tâche, les résultats ont divergé, les réseaux n'arrivant pas à classifier correctement tous les cas du XOR s'il avait trop peu de neurones intermédiaires.
+Chaque équipe a donc tenté lors de cette étape de coder sa version d'un réseau d'apprentissage du XOR, en utilisant pour commencer la fonction d'activation sigmoïde et un apprentissage stochastique. Malgré la simplicité apparente de cette tâche, les résultats ont divergé, les réseaux n'arrivant pas à classifier correctement tous les cas du XOR s'il avait trop peu de neurones intermédiaires.
 
 Le premier constat fut donc le suivant : l'assurance de la convergence de l'erreur vers $0$ ne se fait que lorsque la couche intermédiaire du réseau a au moins 4 neurones.
 
@@ -104,7 +104,7 @@ Une singularité rencontrée a été la valeur du learning rate, qui devait êtr
 
 Ce réseau développé main, bien qu'initialement seulement utile pour la compréhension des problèmes, nous servira à la fin du projet afin de réaliser nos résultats les plus concluants.
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \subfloat[fonction sigmoïde, entrées non centrées]{\includegraphics[width=0.49 \linewidth]{XOR41SBSC.png}}
 \subfloat[fonction sigmoïde, entrées centrées]{\includegraphics[width=0.49\linewidth]{XOR41SBSCT.png}}
@@ -116,26 +116,26 @@ Ce réseau développé main, bien qu'initialement seulement utile pour la compr�
 
 Nos conclusions nous ont menés, dans la suite de l'étude, à utiliser la fonction tangente hyperbolique plutot qu'une sigmoïde, à centraliser et réduire les entrées, et à choisir des poids initialisés autour de zéro et des biais initialisés nuls.
 
-\subsection{Application au problèmme de classification de chiffres manuscrits}
+\subsection{Application au problème de classification de chiffres manuscrits}
 
 Après avoir vérifié que la théorie fonctionnait sur une fonction aussi simple que la fonction XOR, nous devions tester les performances de l'algorithme sur un sujet un peu plus complexe.
 
 \paragraph{MNIST}
-Le problème classique que l'on a choisi de résoudre avec un réseau de neurones est celui de la classification de chiffres manuscrits. Pour cela, on utilise la base de données MNIST, un dataset disponible en ligne comprenant des dizaines de milliers d'images de $28\times 28$ pixels en nuances de gris, chacune représentant un chiffre entre $0$ et $9$, celui-ci étant fourni avec l'image. le perceptron que l'on va utiliser pour classifier l'image aura donc un vecteur d'entrée de taille $784$, et un vecteur de sortie de taille $10$. Dans la suite du rapport, les résultats seront donnés après un léger post-traitement: on choisira pour classifier un nombre, la coordonnée du vecteur de sortie étant maximale, et nos pourcentages de réussites seront fondés sur ce principe.
+Le problème classique que l'on a choisi de résoudre avec un réseau de neurones est celui de la classification de chiffres manuscrits. Pour cela, on utilise la base de données MNIST, un dataset disponible en ligne comprenant des dizaines de milliers d'images de $28\times 28$ pixels en nuances de gris, chacune représentant un chiffre entre $0$ et $9$, celui-ci étant fourni avec l'image. Le perceptron que l'on va utiliser pour classifier l'image aura donc un vecteur d'entrée de taille $784$, et un vecteur de sortie de taille $10$. Dans la suite du rapport, les résultats seront donnés après un léger post-traitement: on choisira pour classifier un nombre, la coordonnée du vecteur de sortie étant maximale, et nos pourcentages de réussites seront fondés sur ce principe.
 
-\begin{figure}[h!]
+\begin{figure}
 \includegraphics[width=0.8 \linewidth]{MNIST.png}
 \centering
 \caption{exemple d'images tirées de la base de données MNIST}
 \label{fig:MNIST}
 \end{figure}
 
-La suite consistait alors en la réalisation d'un réseau de neurones pouvant travailler sur la base de de données MNIST des chiffres manuscrits, et sachant à terme reconnaître les chiffres. Le premier souci en terme de travail d'équipe a été rencontré à ce moment-là : deux membres du groupe avaient chacun écrit une version de l'algorithme d'apprentissage, et après discussion tendues, les deux membres ont travaillé ensemble à la réalisation du perceptron. La nécessité d'utiliser les outils de programmation collectives tels GitHub d'une bonne manière s'est fait ressentir.
+La suite consistait alors en la réalisation d'un réseau de neurones pouvant travailler sur la base de de données MNIST des chiffres manuscrits, et sachant à terme reconnaître les chiffres. Le premier souci en terme de travail d'équipe a été rencontré à ce moment-là : deux membres du groupe avaient chacun écrit une version de l'algorithme d'apprentissage, et après discussion tendue, les deux membres ont travaillé ensemble à la réalisation du perceptron. La nécessité d'utiliser les outils de programmation collectives tels GitHub d'une bonne manière s'est fait ressentir.
 
 \paragraph{Résultats}
 Nos perceptrons ont rapidement réussi à résoudre ce problème de classification, mais en regardant plus précisement, les paramètres liés à nos premiers résultats différaient énormément des résultats théoriques, surtout en terme de vitesse de calcul et en taux d'apprentissage : alors qu'il devrait être de l'ordre de $10^{-4}$ pour obtenir une convergence précise et suffisante, nous pouvions monter jusqu'à $10^{-1}$ voire $1$, et toujours converger assez lentement (voir figure 5). Ce problème restera dans notre code sans en trouver de réelle raison pendant environ 1 mois.
 
-\begin{figure}[h!]
+\begin{figure}
 \includegraphics[width=\linewidth]{errorRate.png}
 \centering
 \caption{Influence du learning rate sur la vitesse de convergence (en nombre d'itérations de l'entraînement) }
@@ -148,7 +148,7 @@ Les valeurs des erreurs finales restant malgré tout satisfaisantes et cohérent
 
 Les travaux de LeCun affirmaient que l'initialisation des valeurs des poids et des biais des neurones étaient à rendre aléatoires selon une loi normale centrée. Nous avons donc voulu tester différentes manières d'initialiser ces paramètres, ce qui nous a permis de rapidement exclure l'idée d'initialiser tous les poids à $0$, comme on le voit sur la figure 6. 
 
-\begin{figure}[h!]
+\begin{figure}
 \includegraphics[width=\linewidth]{initPoids.png}
 \centering
 \caption{Influence de l'initialisation des poids sur la vitesse de convergence (en nombre d'itérations de l'entraînement) }
@@ -158,11 +158,11 @@ Les travaux de LeCun affirmaient que l'initialisation des valeurs des poids et d
 \paragraph{Batch-training}
 Nous avons pour la suite du projet travaillé en "batch-training". Cette méthode d'apprentissage signifie que nous minimisons la fonction de coût selon la moyenne de son expression sur plusieurs entrées du set d'apprentissage, regroupées dans un batch.
 
-La taille du batch, toutefois, était une question différente : des batchs plus petits, soit un modèle tendant vers un descente stochastique de gradient, permet d'augmenter la vitesse de l'apprentissage, mais le choix d'apprendre sur des batchs plus grands permet une plus grande robustesse à d'éventuels mauvaises données d'entraînement et donc de minimiser la fonction à chaque étape dans une direction plus proche de celle du minimum.
+La taille du batch, toutefois, était une question différente : des batchs plus petits, soit un modèle tendant vers une descente stochastique de gradient, permet d'augmenter la vitesse de l'apprentissage, mais le choix d'apprendre sur des batchs plus grands permet une plus grande robustesse à d'éventuelels mauvaises données d'entraînement et donc de minimiser la fonction à chaque étape dans une direction plus proche de celle du minimum.
 
 La conclusion qui nous est venue est la suivante : le meilleur compromis entre stabilité et précision de l'erreur finale est obtenu pour des batch de taille entre 16 et 32. Ces résultats sont appuyés par plusieurs travaux tiers cités par leCun. % TODO: ref bibliographique 
 
-Nous avons ensuite rencontré un second problème face au choix d'une nouvelle vitesse d'apprentissage (rappelons que ce paramètre externe au réseau représente la taille du pas vers la minimisation de la fonction de coût que nous effectuons à chaque itération de l'entraînement)
+Nous avons ensuite rencontré un second problème face au choix d'une nouvelle vitesse d'apprentissage (rappelons que ce paramètre externe au réseau représente la taille du pas vers la minimisation de la fonction de coût que nous effectuons à chaque itération de l'entraînement).
 
 \paragraph{Amélioration de la fonction d'activation}
 Nous avions, depuis le début, utilisé la fonction d'activation sigmoïde basique $f(x) = \frac{1}{1 + e^{-x}}$ dans chaque neurone de notre réseau, et donc utilisé des vitesses appropriées pour cette fonction.
@@ -170,12 +170,12 @@ Néanmoins, au vu de ses meilleurs résultats sur XOR, nous avons voulu changer 
 
 En gardant un learning rate du même ordre, cette transition nous semblait au premier abord inefficace, voire semblait empirer les résultats. En effet, l'erreur de la reconnaissance des chiffres de la base MNIST ne convergeait même pas lors de nos tests avec la nouvelle fonction d'activation. 
 
-En réalité, l'extrême efficacité de cette fonction, suggérée encore une fois par LeCun, associée à nos taux d'apprentissage bien trop élevés, empêchaient la convergence du réseau de neurones: ainsi, en utilisant une descente de gradient simple, il existe un learning rate théorique maximal au delà duquel il est impossible de continuer de converger une fois proche d'un minimum de la fonction. 
-Quelques jours plus tard, le groupe se rendit compte que la même fonction d'activation, avec des taux extrêmement bas, convergeaient à une vitesse fulgurante, voire trop rapide. %en quoi c'est un problème????
+En réalité, l'extrême efficacité de cette fonction, suggérée encore une fois par LeCun, associée à nos taux d'apprentissage bien trop élevés, empêchait la convergence du réseau de neurones: ainsi, en utilisant une descente de gradient simple, il existe un learning rate théorique maximal au delà duquel il est impossible de continuer de converger une fois proche d'un minimum de la fonction. 
+Quelques jours plus tard, le groupe se rendit compte que la même fonction d'activation, avec des taux extrêmement bas, convergeaient à une vitesse fulgurante, voire trop rapide.
 
 Une des solutions évoquées à cette problématique est de ne pas utiliser une descente de gradient simple avec un learning rate constant mais plutôt diverses méthodes plus complexes (RMSprop, Adam, une descente avec inertie...) qui modifient la vitesse d'apprentissage en fonction de la vitesse d'apprentissage aux étapes précédentes afin d'accélérer autour des zones plates de la fonction et de réduire la vitesse autour des minima.
 
-\begin{figure}[h!]
+\begin{figure}
 \includegraphics[width=\linewidth]{activations.PNG}
 \centering
 \caption{Différentes fonctions d'activation pouvant être utilisées dans des réseaux de neurones }
@@ -196,8 +196,8 @@ Toutefois, étant légèrement en retard sur le planning de l'année, et sachant
 \newpage
 \section{Réseaux de neurones à convolutions}
 
-\subsection{Principes des CNN - Convolutionnal Neuronal Networks}
-Notre étude des réseaux neuronaux à convolution n'a été dans un premier temps que théorique: l'intérêt n'était pas d'aprendre à en coder un "avec les mains" mais surtout de se renseigner sur le fonctionnement et le rôle des différents paramètres pour pouvoir l'utiliser à bon escient pour résoudre des problèmes pour lesquels c'est un un outil adapté, en particulier l'analyse d'images. Ainsi, lors de notre utilisation future de réseaux à convolutions (ou CNN) fournis par des modules comme tenserflow, nous ne nous retrouvions pas à utiliser l'outil comme une boite noire.
+\subsection{Principes des CNN - Convolutional Neuronal Networks}
+Notre étude des réseaux neuronaux à convolution n'a été dans un premier temps que théorique: l'intérêt n'était pas d'apprendre à en coder un "avec les mains" mais surtout de se renseigner sur le fonctionnement et le rôle des différents paramètres pour pouvoir l'utiliser à bon escient pour résoudre des problèmes pour lesquels c'est un un outil adapté, en particulier l'analyse d'images. Ainsi, lors de notre utilisation future de réseaux à convolutions (ou CNN) fournis par des modules comme tenserflow, nous ne nous retrouvions pas à utiliser l'outil comme une boite noire.
 
 \paragraph{Utilisation}
 Les réseaux de neurones à convolutions, comme nous allons le voir, sont souvent utilisés dans l'analyse d'image, car ils compensent le principal problème des perceptrons classiques dans le cas de vecteurs d'entrées de haute dimension: la lenteur de l'apprentissage. En effet, le nombre de poids et donc le nombre de dérivées à calculer va vite trop augmenter : par exemple, si l'on veut classer une image $300\times300$ selon un critère binaire et si $n$ est la taille de la couche intermédiaire, on aurait plus de $90000 n$ paramètres selon lesquels il faudrait calculer la dérivée partielle à chaque itération de l'entraînement, ce qui rendrait l'apprentissage impossible en temps fini. 
@@ -220,7 +220,7 @@ Ce type de filtrage lui confère les propriétés suivantes :
 \end{itemize}
 La figure \ref{fig:CNN.png} montre les points sur lesquels un réseau à convolution diffère d'un réseau neuronal classique.
 
-\begin{figure}[h!]
+\begin{figure}
 \centering
 \subfloat[alternance des couches dans un CNN]{\includegraphics[width=0.49 \linewidth]{couchesCNN.png}}
 \subfloat[une couche de convolutions]{\includegraphics[width=0.4\linewidth]{filtre.png}}
@@ -240,13 +240,13 @@ Nous avons donc, pour commencer, appliqué un tutoriel basique d'apprentissage s
 \paragraph{Dropout}
 Le dropout consiste à désactiver un certain pourcentage de neurones de façon aléatoire (probabilité d'activation du neurone fixé en paramètre). Ce système d'apprentissage " partiel " permet en réalité aux neurones d'être moins dépendants des neurones précédents, et donc plus dépendants de l'entrée en elle-même, mais surtout permet d'éviter le surapprentissage. 
 
-Nous avons en effet commmencé à prendre en considération taux de dropout lors de notre passsage à tensorflow car ce module permet de modifier cet hyperparamètre, c'est-à-dire la probabilité qu'a un neurone d'être ignoré pendant l'aprentissage, assez facilement sans toucher au reste du réseau. Nous avons donc étudié l'influence de cette probabilité dans un cas fixe, l'apprentissage de la base de données MNIST Par un MLP de taille raisonnable (64-32).
+Nous avons en effet commmencé à prendre en considération taux de dropout lors de notre passsage à tensorflow car ce module permet de modifier cet hyperparamètre, c'est-à-dire la probabilité qu'a un neurone d'être ignoré pendant l'apprentissage, assez facilement sans toucher au reste du réseau. Nous avons donc étudié l'influence de cette probabilité dans un cas fixe, l'apprentissage de la base de données MNIST Par un MLP de taille raisonnable (64-32).
 Néanmoins, comme vu auparavant, la base MNIST de par sa taille et sa diversité empêche en elle-même le surapprentissage, nous n'avons par conséquent pas vu de différence. 
 
 Ce concept sera donc à garder pour d'autres éventuels systèmes neuronaux. Son utilité dans le cas d'un AutoEncoder sera observée plus tard (voir plus bas) et il sera souvent fixé à une valeur de l'ordre de 25\% lors de l'utilisations de MLPs par le Deep Q-Learning.
 
 Un example de dropout est présenté dans la figure \ref{fig:dropout.PNG}.
-\begin{figure}[h!]
+\begin{figure}
 \includegraphics[width=\linewidth]{dropout.PNG}
 \centering
 \caption{Description du dropout dans le cas simple d'un perceptron}
@@ -256,7 +256,7 @@ Un example de dropout est présenté dans la figure \ref{fig:dropout.PNG}.
 \newpage
 Nous avons eu l'occasion de discuter avec un ancien élève de Supélec lors de l'une des nombreuses réunions de projet, qui travaillait également avec tensorflow sur de l'analyse de signaux. Cet élève nous a gracieusement fourni un code tensorflow, utilisant des fonctions actuellement à jour, et permettant la visualisation en direct de tensorboard et des différents graphiques liés à nos réseaux de neurones. Si la partie graphique de tensorboard est assez intuitive à prendre en main, la déconcertante complexité du code nécessaire à son bon fonctionnement a été une embûche à notre avancement.
 
-Une fois l'étape des CNN terminée, les profs encadrants nous ont donné pour but de travailler sur le Q-learning : une théorie de l'apprentissage par machine tout à fait différente des perceptrons, avec des cas d'applications tout aussi différents.
+Une fois l'étape des CNN terminée, les professeurss encadrants nous ont donné pour but de travailler sur le Q-learning : une théorie de l'apprentissage par machine tout à fait différente des perceptrons, avec des cas d'applications tout aussi différents.
 
 \newpage
 \section{Q-Learning}
@@ -269,7 +269,7 @@ $$Q(s,a) = (1-\alpha) Q(s,a) + \alpha (r + \gamma max_{a'} Q(s',a') )$$
 
 On nomme $\alpha$ le taux d'apprentissage, indiquant à quel point il faut mettre à jour la valeur de Q, et $\gamma$ le taux de \textit{discount} ou décroissance, indiquant l'importance relative des récompenses possibles vis-à-vis de la récompense obtenue.
 
-\begin{figure}[h!]
+\begin{figure}
 \subfloat[état initial du plateau]{\includegraphics[width=0.49 \linewidth]{Qlearning.png}}
 \subfloat[exploration du plateau]{\includegraphics[width=0.49 \linewidth]{Qlearning2.png}}
 \newline
@@ -303,14 +303,13 @@ Malheureusement pour notre utilisation, l'état consiste en une image à $160 \t
 
 L'étude préliminaire théorique du jeu de Pong a révélé plusieurs problématiques propres au jeu de pong :
 \begin{itemize}
-	\item L'utilisation d'un réseau de neurones est absolument nécessaire : utiliser simplement l'observation comme indexeur d'états donnerait un ensemble d'états possible bien trop grand (position de la balle, des joueurs, changement du score, etc...)
+	\item L'utilisation d'un réseau de neurones est absolument nécessaire : utiliser simplement l'observation comme indexeur d'états donnerait un ensemble d'états possibles bien trop grand (position de la balle, des joueurs, changement du score, etc...)
 	\item Ce réseau de neurones sera a priori un réseau à convolution, puisque la problématique de la detection de "patterns" et de leur positionnement est primordiale en jouant à Pong.
 	\item L'utilisation des 3 couleurs (RGB) n'est pas forcément utile, on se limitera par exemple à une combinaison linéaire du rouge et du bleu, qui donnent le plus de contraste entre les différents éléments de l'écran (voir figure \ref{fig:pong-plateau})
 \end{itemize}
 
 \begin{figure}
-\subfloat[Plateau initial de pong]{\includegraphics[width=0.49\linewidth]{pong-plateau.png}}
-\subfloat[Plateau filtré]{\includegraphics[width=0.49\linewidth]{pong-filter.png}}
+\includegraphics[width=0.49\linewidth]{pong-filter.png}
 \centering
 \caption{Prétraitement du plateau de Pong}
 \label{fig:pong-plateau}
@@ -335,27 +334,29 @@ La première chose à faire est d’essayer cette implémentation à l’aide d�
 
 La chose qui semble alors logique afin d’éviter ce problème est de passer à des CNN, afin d’ajouter une dimension de « localité » aux patterns détectés.
 
-Pour vérifier l’implémentation correcte de notre Q-Learning par réseau de neurones, nous tentons d’abord de l’appliquer sur un jeu « trivial » qu’est le jeu de Nim. Le jeu de Nim est un jeu très simple qui se joue à deux joueurs. Un certain nombre d’allumettes sont alignées, et les joueurs jouent chacun leur tour, en retirant entre 1 et 3 allumettes. Le joueur gagnant est celui qui retire la dernière allumette.
-
-Nous sommes donc en présence d’un jeu, avec l’un des joueurs étant le réseau et l’autre étant une intelligence pré-codée, avec différents états (le nombre d’allumettes faisant office d’états) et différentes actions (prendre 1,2 ou 3 allumettes). Un perceptron a été mis à l’épreuve au jeu de Nim, et les résultats ont été tout à fait concluants (mettre des graphes, pipoter, etc...)
-% résultats Nim
-
 \subsection{Confrontation à Pong}
 Vient maintenant le tour de Pong, et sa complexité bien supérieure à celle du jeu de Nim.
 
 L'équipe se heurte alors à un obstacle : les temps de calcul. La convergence du réseau à convolution sur l’image de pong semble être trop lente pour aboutir à des résultats concluants sans avoir à faire tourner le programme pendant plusieurs jours voire semaines (les simulations étaient effectuées sur une carte graphique NVIDIA GTX 1050 Ti). Des solutions alternatives commencent alors à être envisagées :
 \begin{itemize}
 	\item Récompenser le réseau non plus seulement sur son taux de victoire mais également sur son temps de survie. Effectivement, on peut imaginer qu’avec ce système de récompense, le réseau aura tendance à enregistrer les différents mouvements à effectuer en fonction de l’image pour pouvoir renvoyer la balle.
-	Ce système de « récompenses intermédiaires » a été pensé en analogie avec une voiture sur un circuit qui devrait apprendre au fur et à mesure comment progresser sur ce circuit, et aurait pour but d’accompagner le réseau sur son apprentissage.  %(slide 8 mars 2019)
-	\item Utiliser non pas l’image du jeu, mais des « features », c’est-à-dire des valeurs scalaires décrivant l’état actuel de l’image de façon parfaite. Un exemple de features utilisables sur pong est : position des raquettes, position de la balle, vitesses horizontales et verticales de la balle, ce qui fait un total de 6 features, décrivant un unique état. Nous aurions donc en entrée du réseau 6 valeurs, et en sortie une ou deux valeurs, en fonction de la manière dont a été codée le réseau.
+	Ce système de « récompenses intermédiaires » a été pensé en analogie avec une voiture sur un circuit qui devrait apprendre au fur et à mesure comment progresser sur ce circuit, et aurait pour but d’accompagner le réseau sur son apprentissage.
+	\item Utiliser non pas l’image du jeu, mais des « features », c’est-à-dire des valeurs scalaires décrivant l’état actuel de l’image de façon parfaite. Un exemple de features utilisables sur pong est : position des raquettes, position de la balle, vitesses horizontales et verticales de la balle, ce qui fait un total de 6 features, décrivant un unique état. Nous aurions donc en entrée du réseau 6 valeurs, et en sortie une ou deux valeurs, en fonction de la manière dont a été codée le réseau. La figure \ref{fig:features} permet de visualiser ce que représentent les features sur le plateau de jeu de Pong.
 	\item Pré-traiter l’image afin d’appliquer un gros contraste sur les éléments intéressants du jeu sans en perdre l’information. Le pré-traitement que l’on trouve généralement dans les implémentations de réseaux de neurones pour l’apprentissage de pong est le suivant : donner la valeur 0 à tous les éléments d’arrière-plan, donner la valeur 1 à tous les « sprites » (balle, raquettes), et effectuer la différence de deux images consécutives (les raquettes étant obligées de se déplacer, et la balle étant en mouvement), afin d’obtenir une image qui contient la vitesse et la position de la balle, ainsi que les directions et les positions des deux raquettes. Eventuellement réduire la taille de l’image pour simplifier le réseau.
 \end{itemize}
 
+\begin{figure}
+\includegraphics[width=\linewidth]{pong-plateau.png}
+\centering
+\caption{Plateau de jeu de Pong et features associées}
+\label{fig:features}
+\end{figure}
+
 Le problème moral de ces implémentations intermédiaires est le fait d’aider le réseau. Plus le réseau a besoin d’aide, moins il est indépendant, et moins le sentiment d’avoir « fait apprendre à la machine » est présent. Par exemple, la décision de prendre des features arbitraires donne un sentiment de « triche » qui va à l’encontre du but final du projet. 
 
-Néanmoins, au vu des difficultés à faire fonctionner notre programme pour Pong, nous avons décidé d'apporter un léger preé-traitement :
+Néanmoins, au vu des difficultés à faire fonctionner notre programme pour Pong, nous avons décidé d'apporter un léger pré-traitement :
 \begin{itemize}
-	\item Supprimer les images inutiles qui n'influence pas le déroulement du jeu. Cela permet de moins apprendre sur des actions qui n'ont pas de réel impact sur la suite de la partie.
+	\item Supprimer les images inutiles qui n'influencent pas le déroulement du jeu. Cela permet de moins apprendre sur des actions qui n'ont pas de réel impact sur la suite de la partie.
 	\item Faire osciller le taux d'exploration pour éviter de se retrouver dans un minimum local non performant, tout en explorant convenablement les stratégies intéressantes.
 \end{itemize} 
 
@@ -373,6 +374,15 @@ Cela permet de plus de ne pas oublier les premiers enseignements de notre résea
 L'un des principaux problèmes du Q-learning auxquels nous avons été confrontés est apparu assez clairement lors de l'entrainement de l'algorithme sur le jeu Pong : l'intelligence jouant pratiquement au hasard au début de son entrainement, elle a très peu de chance de gagner et donc d'apprendre des stratégies gagnantes.
 Elle se contente d'apprendre à ne pas perdre, et cela ralentit considérablement la vitesse de convergence.
 
+Pour remédier à ce problème, nous avons décidé de modifier la fonction de récompense du jeu. Nous avons en effet ajouté une récompense dite "de survie", plus faible que la récompense de victoire, mais qui arrive beaucoup plus fréquemment. Nous encouragions donc notre programme à apprendre les coups qui lui permettaient de ne pas perdre, c'est à dire de renvoyer la balle correctement. Cette méthode est inspirée du jeu de voiture présenté en figure \ref{fig:inter-rewards}, où l'intelligence artificielle doit apprendre à réaliser des tours de circuit, en étant récompensée à chaque porte.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{inter-rewards.png}
+\centering
+\caption{Récompenses intermédiaires du jeu de voiture}
+\label{fig:inter-rewards}
+\end{figure}
+
 Les différentes implémentations ont été essayées… sans succès. Vous trouverez les courbes correspondantes à différentes implémentations ci-dessous.
 
 Le modèle semblait souvent converger vers une mauvaise solution, dans laquelle la raquette se bloquait en haut ou en bas de l'écran. Les scores étaient le plus souvent dus au hasard.
@@ -389,13 +399,26 @@ Le réseau comportait 5 couches, et la couche centrale, primordiale pour l'autoe
 
 Les performances furent plutôt convainquantes, la classification sur les données réencodées était de 92\%, soit un peu moins que les 97\% précedemment obtenus.
 
-Nous avons aussi pu tester l'influence du dropout sur ces résultats (voir figure \ref{fig:dropout-autoencodeur}). Etonnement, les meilleurs résultats sont obtenus avec un dropout de 90\%.
+Nous avons aussi pu tester l'influence du dropout sur ces résultats (voir figure \ref{fig:dropout-autoencodeur}). Etonnement, les meilleurs résultats sont obtenus avec un dropout de 90\%. On peut voir que les nombres sont assez fidèlement reproduits avec seulement 16 features, comme le montre la figure \ref{fig:autoencodeur}.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{influence-dropout.png}
 \centering
 \caption{Influence du taux de dropout sur les résultats de l'auto-encodeur}
 \label{fig:dropout-autoencodeur}
+\end{figure}
+
+\begin{figure}
+\subfloat[Autoencodage d'un 0]{\includegraphics[width=0.5\linewidth]{auto0.png}}
+\subfloat[Autoencodage d'un 3]{\includegraphics[width=0.5\linewidth]{auto3.png}}
+\newline
+\subfloat[Autoencodage d'un 4]{\includegraphics[width=0.5\linewidth]{auto4.png}}
+\subfloat[Autoencodage d'un 5]{\includegraphics[width=0.5\linewidth]{auto5.png}}
+\newline
+\subfloat[Autoencodage d'un 8]{\includegraphics[width=0.5\linewidth]{auto8.png}}
+\centering
+\caption{Autoencodage de différents nombres du set de données MNIST avec 16 features sous TensorFlow}
+\label{fig:autoencodeur}
 \end{figure}
 
 Malheureusement, nous n'avons pas pu tester l'influence de cette technique, puisque la convergence n'a jamais été atteinte avec Pong.
@@ -407,6 +430,13 @@ Les professeurs encadrants constatant l’exaspération des élèves décidèren
 Un oiseau soumis à la gravité doit passer au travers d’obstacles consécutifs en passant par une ouverture. Les deux actions possibles sont « aller vers le haut » ou « ne rien faire ».
 
 Le réseau peut prendre en entrée l’image ou des features adéquates (nous nous sommes contentés des features pour l’apprentissage afin de vérifier l’implémentation de nos réseaux de neurones associés au Q-Learning), et le résultat était plutôt convaincant.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{flappy-bird-plateau.jpg}
+\centering
+\caption{Présentation du plateau de Flappy Bird}
+\label{fig:flappy-bird-plateau}
+\end{figure}
 
 \begin{figure}
 \includegraphics[width=\linewidth]{flappy-bird.png}
